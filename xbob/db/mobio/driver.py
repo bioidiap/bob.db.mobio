@@ -33,7 +33,7 @@ class Interface(BaseInterface):
     from . import __doc__ as docs
     
     subparsers = self.setup_parser(parser,
-   "My Great database", docs)
+      "MOBIO database", docs)
 
     # example: get the "create" action from a submodule
     from .create import add_command as create_command
