@@ -115,13 +115,15 @@ class Database(object):
     VALID_GROUPS = self.groups()
     VALID_SUBWORLDS = self.subworld_names()
     VALID_GENDERS = self.genders()
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
     groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
     subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
     gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
 
     # List of the clients
     q = self.session.query(Client)
+    if protocol:
+      q = q.filter(Client.gender.in_(protocol))
     if groups:
       q = q.filter(Client.sgroup.in_(groups))
     if subworld:
@@ -349,9 +351,10 @@ class Database(object):
     subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
     gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
 
+    import collections
     if(model_ids is None):
       model_ids = ()
-    elif isinstance(model_ids, (str,unicode)):
+    elif not isinstance(model_ids, collections.Iterable):
       model_ids = (model_ids,)
 
     # Now query the database

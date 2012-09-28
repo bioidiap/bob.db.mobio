@@ -22,7 +22,7 @@ def checkfiles(args):
       purposes=args.purposes,
       model_ids=args.client,
       groups=args.groups,
-      languages=args.languages
+      classes=args.classes,
       )
 
   # go through all files, check if they are available on the filesystem
