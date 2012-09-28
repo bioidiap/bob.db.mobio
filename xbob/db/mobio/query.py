@@ -39,29 +39,55 @@ class Database(object):
 
     return self.session is not None
 
-  def __check_validity__(self, l, obj, valid):
+  def assert_validity(self):
+    """Raise a RuntimeError if the database backend is not available"""
+
+    if not self.is_valid():
+      raise RuntimeError, "Database '%s' cannot be found at expected location '%s'. Create it and then try re-connecting using Database.connect()" % (INFO.name(), SQLITE_FILE)
+
+  def __check_validity__(self, l, obj, valid, default):
     """Checks validity of user input data against a set of valid values"""
-    if not l: return valid
-    elif isinstance(l, str): return self.__check_validity__((l,), obj, valid)
+    if not l: return default
+    elif not isinstance(l, (tuple,list)): 
+      return self.__check_validity__((l,), obj, valid, default)
     for k in l:
       if k not in valid:
         raise RuntimeError, 'Invalid %s "%s". Valid values are %s, or lists/tuples of those' % (obj, k, valid)
     return l
 
-  def __gender_replace__(self,l):
-    """Replace 'female' by 'f' and 'male' by 'm', and returns the new list"""
-    if not l: return l
-    elif isinstance(l, str): return self.__gender_replace__((l,))
-    l2 = []
-    for val in l:
-      if(val == 'female'): l2.append('f')
-      elif(val == 'male'): l2.append('m')
-      else: l2.append(val)
-    return tuple(l2)
+  def groups(self):
+    """Returns the names of all registered groups"""
 
+    return ProtocolPurpose.group_choices
+
+  def genders(self):
+    """Returns the list of genders: 'm' for male and 'f' for female"""
+
+    return Client.gender_choices
+
+  def subworld_names(self):
+    """Returns all registered subworld names"""
+
+    self.assert_validity()
+    l = self.subworlds()
+    retval = [str(k.name) for k in l]
+    return retval
+
+  def subworlds(self):
+    """Returns the list of subworlds"""
+
+    self.assert_validity()
+
+    return list(self.session.query(Subworld))
+
+  def has_subworld(self, name):
+    """Tells if a certain subworld is available"""
+
+    self.assert_validity()
+    return self.session.query(Subworld).filter(Subworld.name==name).count() != 0
 
   def clients(self, protocol=None, groups=None, subworld=None, gender=None):
-    """Returns a set of clients for the specific query by the user.
+    """Returns a list of Clients for the specific query by the user.
 
     Keyword Parameters:
 
@@ -73,122 +99,114 @@ class Database(object):
       Please note that world data are protocol/gender independent
 
     subworld
-      Specify a split of the world data ("twothirds", "")
+      Specify a split of the world data ('onethird', 'twothirds')
       In order to be considered, "world" should be in groups and only one 
       split should be specified. 
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A list containing all the client ids which have the given
-    properties.
+    Returns: A list containing all the clients which have the given properties.
     """
 
-    VALID_PROTOCOLS = ('female', 'male')
-    VALID_GROUPS = ('dev', 'eval', 'world')
-    VALID_SUBWORLDS = ('onethird','twothirds',)
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    protocol = self.__gender_replace__(protocol)
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS)
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    self.assert_validity()
 
-    retval = []
-    # World data (gender independent)
-    if "world" in groups:
-      if len(subworld)==1:
-        q = self.session.query(Client).join(SubworldClient).filter(SubworldClient.name.in_(subworld))
-      else:
-        q = self.session.query(Client).filter(Client.sgroup == 'world')
-      if gender:
-        q = q.filter(Client.gender.in_(gender))
-      q = q.order_by(Client.id)
-      for id in [k.id for k in q]: 
-        retval.append(id)
-    
-    # dev / eval data
-    if 'dev' in groups or 'eval' in groups:
-      q = self.session.query(Client).filter(and_(Client.sgroup != 'world', Client.sgroup.in_(groups)))
-      if protocol:
-        q = q.filter(Client.gender.in_(protocol))
-      if gender:
-        q = q.filter(Client.gender.in_(gender))
-      q = q.order_by(Client.id)
-      for id in [k.id for k in q]: 
-        retval.append(id)
+    VALID_PROTOCOLS = self.protocol_names()
+    VALID_GROUPS = self.groups()
+    VALID_SUBWORLDS = self.subworld_names()
+    VALID_GENDERS = self.genders()
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
+    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
+    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
 
-    return retval
+    # List of the clients
+    q = self.session.query(Client)
+    if groups:
+      q = q.filter(Client.sgroup.in_(groups))
+    if subworld:
+      q = q.join(Subworld, Client.subworld).filter(Subworld.name.in_(subworld))
+    if gender:
+      q = q.filter(Client.gender.in_(gender))
+    q = q.order_by(Client.id)
+    return list(q)
 
-  def tclients(self, protocol=None, groups=None, gender=None):
+  def has_client_id(self, id):
+    """Returns True if we have a client with a certain integer identifier"""
+
+    self.assert_validity()
+    return self.session.query(Client).filter(Client.id==id).count() != 0
+
+  def client(self, id):
+    """Returns the Client object in the database given a certain id. Raises
+    an error if that does not exist."""
+
+    self.assert_validity()
+    return self.session.query(Client).filter(Client.id==id).one()
+
+  def tclients(self, protocol=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of T-Norm clients for the specific query by the user.
 
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ("male", "female"). T-Norm clients are gender
-      independent by default for MOBIO.
+      One of the MOBIO protocols ('male', 'female').
     
     groups
       The groups to which the clients belong ("dev", "eval").
-      Useless as they are independent from 'dev' and 'eval' for this database
+      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      Please note that 'onethird' is the default value.
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A list containing all the client ids belonging to the given group.
+    Returns: A list containing all the T-norm clients belonging to the given group.
     """
 
-    VALID_PROTOCOLS = ('female', 'male')
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    protocol = self.__gender_replace__(protocol)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    VALID_PROTOCOLS = self.protocol_names()
+    VALID_GROUPS = ('dev', 'eval')
+    VALID_SUBWORLDS = self.subworld_names()
+    VALID_GENDERS = self.genders()
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
+    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
+    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
 
-    q = self.session.query(TModel).join(Client)
-    if gender:
-      q = q.filter(Client.gender.in_(gender))
-    q = q.order_by(TModel.client_id)
-    
-    tclient = []
-    for cid in [k.client_id for k in q]:
-      if not cid in tclient: tclient.append(cid)
-    return tclient
+    return self.clients(protocol, 'world', subworld, gender)
 
-  def zclients(self, protocol=None, groups=None, gender=None):
+  def zclients(self, protocol=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of Z-Norm clients for the specific query by the user.
 
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ("male", "female").
+      One of the MOBIO protocols ('male', 'female').
     
     groups
-      The groups to which the clients belong ("dev", "eval").
-      Useless as they are independent from 'dev' and 'eval' for this database
+      The groups to which the clients belong ('dev', 'eval').
+      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      Please note that 'onethird' is the default value.
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A list containing all the client ids belonging to the given group.
+    Returns: A list containing all the Z-norm clients belonging to the given group.
     """
 
-    VALID_PROTOCOLS = ('female', 'male')
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    protocol = self.__gender_replace__(protocol)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    self.assert_validity()
 
-    q = self.session.query(ZClient).join(Client)
-    if gender:
-      q = q.filter(Client.gender.in_(gender))
-    q = q.order_by(ZClient.client_id)     
+    VALID_GROUPS = ('dev', 'eval')
+    groups = self.__check_validity__(groups, 'group', VALID_GROUPS, '')
 
-    zclient = []
-    for cid in [k.client_id for k in q]:
-      if not cid in zclient: zclient.append(cid)
-    return zclient
-
+    return self.clients(protocol, 'world', subworld, gender)
 
   def models(self, protocol=None, groups=None, subworld=None, gender=None):
     """Returns a set of models for the specific query by the user.
@@ -196,73 +214,71 @@ class Database(object):
     Keyword Parameters:
 
     protocol
-      One of the Mobio protocols ("male", "female").
+      One of the Mobio protocols ('male', 'female').
 
     groups
-      The groups to which the subjects attached to the models belong ("dev", "eval", "world")
+      The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
       Please note that world data are protocol/gender independent
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      In order to be considered, 'world' should be in groups and only one 
+      split should be specified. 
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A list containing all the model ids belonging to the given group.
+    Returns: A list containing all the models belonging to the given group.
     """
 
     return self.clients(protocol, groups, subworld, gender)
 
-
-  def tmodels(self, protocol=None, groups=None, gender=None):
+  def tmodels(self, protocol=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of T-Norm models for the specific query by the user.
 
     Keyword Parameters:
 
     protocol
-      One of the Mobio protocols ("male", "female").
+      One of the MOBIO protocols ('male', 'female').
     
     groups
-      The groups to which the clients belong ("dev", "eval").
-      Useless as they are independent from 'dev' and 'eval' for this database
+      The groups to which the clients belong ('dev', 'eval').
+      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      Please note that 'onethird' is the default value.
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A list containing all the model ids belonging to the given group.
+    Returns: A list containing all the T-norm models belonging to the given group.
     """
 
-    VALID_PROTOCOLS = ('female', 'male')
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    protocol = self.__gender_replace__(protocol)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    self.assert_validity()
 
-    tmodel = []
+    VALID_PROTOCOLS = self.protocol_names()
+    VALID_GROUPS = ('dev', 'eval')
+    VALID_SUBWORLDS = self.subworld_names()
+    VALID_GENDERS = self.genders()
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
+    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
+    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
+
+    # List of the clients
     q = self.session.query(TModel).join(Client)
+    if subworld:
+      q = q.join(Subworld, Client.subworld).filter(Subworld.name.in_(subworld))
     if gender:
       q = q.filter(Client.gender.in_(gender))
-    q = q.order_by(TModel.id)     
-    for tid in [k.id for k in q]:
-      if not tid in tmodel: tmodel.append(tid)
-    return tmodel
+    q = q.order_by(TModel.id)
+    return list(q)
 
-  def zmodels(self, protocol=None, groups=None, gender=None):
-    """Returns a set of Z-Norm models for the specific query by the user.
 
-    Keyword Parameters:
+    return self.tclients(protocol, groups, subworld, gender)
 
-    protocol
-      One of the Mobio protocols ("male", "female").
-    
-    groups
-      The groups to which the clients belong ("dev", "eval").
-      Useless as they are independent from 'dev' and 'eval' for this database
-
-    gender
-      The gender to consider ('male', 'female')
-
-    Returns: A list containing all the model ids belonging to the given group.
-    """
-
-    return self.zclients(protocol, groups, gender)
 
   def get_client_id_from_model_id(self, model_id):
     """Returns the client_id attached to the given model_id
@@ -276,74 +292,11 @@ class Database(object):
     """
     return model_id
 
-  def get_client_id_from_tmodel_id(self, model_id):
-    """Returns the client_id attached to the given T-Norm model_id
-    
-    Keyword Parameters:
-
-    model_id
-      The model_id to consider
-
-    Returns: The client_id attached to the given T-Norm model_id
-    """
-
-    q = self.session.query(TModel).filter(TModel.id == model_id)
-    q = q.order_by(TModel.id)     
-    if q.count() !=1:
-      #throw exception?
-      return None
-    else:
-      return q.first().client_id
-
-  def get_client_id_from_file_id(self, file_id):
-    """Returns the client_id (real client id) attached to the given file_id
-    
-    Keyword Parameters:
-
-    file_id
-      The file_id to consider
-
-    Returns: The client_id attached to the given file_id
-    """
-    q = self.session.query(File).\
-          filter(File.id == file_id)
-    if q.count() !=1:
-      #throw exception?
-      return None
-    else:
-      return q.first().client_id
-
-  def get_internal_path_from_file_id(self, file_id):
-    """Returns the unique "internal path" attached to the given file_id
-    
-    Keyword Parameters:
-
-    file_id
-      The file_id to consider
-
-    Returns: The internal path attached to the given file_id
-    """
-    q = self.session.query(File).\
-          filter(File.id == file_id)
-    if q.count() !=1:
-      #throw exception?
-      return None
-    else:
-      return q.first().path
-
-
-  def objects(self, directory=None, extension=None, protocol=None,
-      purposes=None, model_ids=None, groups=None, classes=None,
-      subworld=None, gender=None):
-    """Returns a set of filenames for the specific query by the user.
+  def objects(self, protocol=None, purposes=None, model_ids=None, 
+      groups=None, classes=None, subworld=None, gender=None):
+    """Returns a set of Files for the specific query by the user.
 
     Keyword Parameters:
-
-    directory
-      A directory name that will be prepended to the final filepath returned
-
-    extension
-      A filename extension that will be appended to the final filepath returned
 
     protocol
       One of the MOBIO protocols ('male', 'female').
@@ -377,244 +330,140 @@ class Database(object):
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A dictionary containing:
-      - 0: the resolved filenames 
-      - 1: the model id (only valid if len(model_ids == 1))
-      - 2: the claimed id attached to the model (only valid if len(model_ids == 1))
-      - 3: the real id
-      - 4: the "stem" path (basename of the file)
-
-    considering all the filtering criteria. The keys of the dictionary are 
-    unique identities for each file in the MOBIO database. Conserve these 
-    numbers if you wish to save processing results later on.
+    Returns: A set of Files with the given properties.
     """
 
-    def make_path(stem, directory, extension):
-      import os
-      if not extension: extension = ''
-      if directory: return os.path.join(directory, stem + extension)
-      return stem + extension
+    self.assert_validity()
 
-    VALID_PROTOCOLS = ('female', 'male')
-    VALID_PURPOSES = ('enrol', 'probe')
-    VALID_GROUPS = ('dev', 'eval', 'world')
+    VALID_PROTOCOLS = self.protocol_names()
+    VALID_PURPOSES = self.purposes()
+    VALID_GROUPS = self.groups()
     VALID_CLASSES = ('client', 'impostor')
-    VALID_SUBWORLDS = ('onethird', 'twothirds',)
+    VALID_SUBWORLDS = self.subworld_names()
+    VALID_GENDERS = self.genders()
 
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    purposes = self.__check_validity__(purposes, "purpose", VALID_PURPOSES)
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS)
-    classes = self.__check_validity__(classes, "class", VALID_CLASSES)
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
+    purposes = self.__check_validity__(purposes, "purpose", VALID_PURPOSES, VALID_PURPOSES)
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, VALID_GROUPS)
+    classes = self.__check_validity__(classes, "class", VALID_CLASSES, VALID_CLASSES)
+    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
+    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
 
-    retval = {}    
-    if(isinstance(model_ids,str)):
+    if(model_ids is None):
+      model_ids = ()
+    elif isinstance(model_ids, (str,unicode)):
       model_ids = (model_ids,)
 
+    # Now query the database
+    retval = []
     if 'world' in groups:
-      q = self.session.query(File).join(Client).\
-            filter(Client.sgroup == 'world')
-      if model_ids:
-        q = q.filter(Client.id.in_(model_ids))
-      if subworld and len(subworld)==1:
-        q = q.join(SubworldFile).\
-              filter(SubworldFile.name.in_(subworld)).\
-              filter(and_(File.client_id == SubworldFile.client_id, File.session_id == SubworldFile.session_id,
-                          File.speech_type == SubworldFile.speech_type, File.shot_id == SubworldFile.shot_id))
+      q = self.session.query(File).join(Client).filter(Client.sgroup == 'world')
+      if subworld:
+        q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
       if gender:
-        q = q.filter(Client.gender.in_(gender))
+        q = q.filter(File.gender.in_(gender))
+      if model_ids:
+        q = q.filter(File.client_id.in_(model_ids))
       q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-      for k in q:
-        retval[k.id] = (make_path(k.path, directory, extension), k.client_id, k.client_id, k.client_id, k.path)
+      retval += list(q)
     
     if ('dev' in groups or 'eval' in groups):
       if('enrol' in purposes):
-        q = self.session.query(File, Protocol, ProtocolEnrolSession).join(Client).\
-              filter(Client.sgroup.in_(groups)).\
-              filter(and_(File.client_id == ProtocolEnrolSession.client_id, File.session_id == ProtocolEnrolSession.session_id)).\
-              filter(Protocol.name == ProtocolEnrolSession.name).\
-              filter(and_(Protocol.name.in_(protocol), Protocol.purpose == 'enrol', File.speech_type == Protocol.speech_type))
+        q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+              filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enrol'))
+        if gender:
+          q = q.filter(File.gender.in_(gender))
         if model_ids:
           q = q.filter(Client.id.in_(model_ids))
-        if gender:
-          q = q.filter(Client.gender.in_(gender))
         q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-        for k in q:
-          retval[k[0].id] = (make_path(k[0].path, directory, extension), k[0].client_id, k[0].client_id, k[0].client_id, k[0].path)
+        retval += list(q)
+
       if('probe' in purposes):
         if('client' in classes):
-          q = self.session.query(File, Protocol, ProtocolEnrolSession).join(Client).\
-                filter(Client.sgroup.in_(groups)).\
-                filter(and_(File.client_id == ProtocolEnrolSession.client_id, File.session_id != ProtocolEnrolSession.session_id)).\
-                filter(Protocol.name == ProtocolEnrolSession.name).\
-                filter(and_(Protocol.name.in_(protocol), Protocol.purpose == 'probe', File.speech_type == Protocol.speech_type))
+          q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+                filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
+          if gender:
+            q = q.filter(File.gender.in_(gender))
           if model_ids:
             q = q.filter(Client.id.in_(model_ids))
-          if gender:
-            q = q.filter(Client.gender.in_(gender))
-          q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-          for k in q:
-            retval[k[0].id] = (make_path(k[0].path, directory, extension), k[0].client_id, k[0].client_id, k[0].client_id, k[0].path)
+          q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)  
+          retval += list(q)
+
         if('impostor' in classes):
-          q = self.session.query(File, Protocol, ProtocolEnrolSession).join(Client).\
-                filter(Client.sgroup.in_(groups)).\
-                filter(and_(File.client_id == ProtocolEnrolSession.client_id, File.session_id != ProtocolEnrolSession.session_id)).\
-                filter(Protocol.name == ProtocolEnrolSession.name).\
-                filter(and_(Protocol.name.in_(protocol), Protocol.purpose == 'probe', File.speech_type == Protocol.speech_type))
-          if(model_ids and len(model_ids)==1):
-            q = q.filter(not_(Client.id.in_(model_ids)))
+          q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+                filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
-            q = q.filter(Client.gender.in_(gender))
+            q = q.filter(File.gender.in_(gender))
+          if len(model_ids) == 1:
+            q = q.filter(not_(File.client_id.in_(model_ids)))
           q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-          for k in q:
-            if(model_ids and len(model_ids) == 1):
-              retval[k[0].id] = (make_path(k[0].path, directory, extension), model_ids[0], model_ids[0], k[0].client_id, k[0].path)
-            else:
-              retval[k[0].id] = (make_path(k[0].path, directory, extension), k[0].client_id, k[0].client_id, k[0].client_id, k[0].path)
-        
-    return retval
+          retval += list(q)
+    
+    return list(set(retval)) # To remove duplicates
 
-  def files(self, directory=None, extension=None, protocol=None,
-      purposes=None, model_ids=None, groups=None, classes=None,
-      subworld=None, gender=None):
-    """Returns a set of filenames for the specific query by the user.
-
-    Keyword Parameters:
-
-    directory
-      A directory name that will be prepended to the final filepath returned
-
-    extension
-      A filename extension that will be appended to the final filepath returned
-
-    protocol
-      One of the MOBIO protocols ('male', 'female').
-
-    purposes
-      The purposes required to be retrieved ('enrol', 'probe') or a tuple
-      with several of them. If 'None' is given (this is the default), it is 
-      considered the same as a tuple with all possible values. This field is
-      ignored for the data from the "world" group.
-
-    model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
-      the model_ids is performed.
-
-    groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
-      tuple with all possible values.
-
-    classes
-      The classes (types of accesses) to be retrieved ('client', 'impostor') 
-      or a tuple with several of them. If 'None' is given (this is the 
-      default), it is considered the same as a tuple with all possible values.
-
-    subworld
-      Specify a split of the world data ("twothirds", "")
-      In order to be considered, "world" should be in groups and only one 
-      split should be specified. 
-
-    gender
-      The gender to consider ('male', 'female')
-
-    Returns: A dictionary containing the resolved filenames considering all
-    the filtering criteria. The keys of the dictionary are unique identities 
-    for each file in the MOBIO database. Conserve these numbers if you 
-    wish to save processing results later on.
-    """
-
-    retval = {}
-    d = self.objects(directory, extension, protocol, purposes, model_ids, 
-      groups, classes, subworld, gender)
-    for k in d: retval[k] = d[k][0]
-
-    return retval
-
-
-  def tobjects(self, directory=None, extension=None, protocol=None,
-      model_ids=None, groups=None, gender=None):
+  def tobjects(self, protocol=None, tmodel_ids=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of filenames for enroling T-norm models for score 
        normalization.
 
     Keyword Parameters:
 
-    directory
-      A directory name that will be prepended to the final filepath returned
-
-    extension
-      A filename extension that will be appended to the final filepath returned
-
     protocol
       One of the MOBIO protocols ('male', 'female').
-
-    model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
-      the model_ids is performed.
+    
+    tmodel_ids
+      Only retrieves the files for the provided list of tmodel ids.  
+      If 'None' is given (this is the default), no filter over 
+      the tmodel_ids is performed.
 
     groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
-      tuple with all possible values.
+      The groups to which the clients belong ('dev', 'eval').
+      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      Please note that 'onethird' is the default value.
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A dictionary containing:
-      - 0: the resolved filenames 
-      - 1: the model id
-      - 2: the claimed id attached to the model 
-      - 3: the real id
-      - 4: the "stem" path (basename of the file)
-
-    considering all the filtering criteria. The keys of the dictionary are 
-    unique identities for each file in the MOBIO database. Conserve these 
-    numbers if you wish to save processing results later on.
+    Returns: A set of Files with the given properties.
     """
 
-    def make_path(stem, directory, extension):
-      import os
-      if not extension: extension = ''
-      if directory: return os.path.join(directory, stem + extension)
-      return stem + extension
+    self.assert_validity()
 
-    VALID_PROTOCOLS = ('female', 'male')
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    VALID_PROTOCOLS = self.protocol_names()
+    VALID_GROUPS = ('dev', 'eval')
+    VALID_SUBWORLDS = self.subworld_names()
+    VALID_GENDERS = self.genders()
 
-    retval = {}    
-    if(isinstance(model_ids,str)):
-      model_ids = (model_ids,)
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
+    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
+    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
 
-    q = self.session.query(File).join(Client).join(TModel).\
-          filter(and_(File.client_id == TModel.client_id, File.session_id == TModel.session_id,
-                      File.speech_type == TModel.speech_type))
-    if model_ids:
-      q = q.filter(TModel.id.in_(model_ids))
+    if(tmodel_ids is None):
+      tmodel_ids = ()
+    elif isinstance(tmodel_ids, (str,unicode)):
+      tmodel_ids = (tmodel_ids,)
+
+    # Now query the database
+    retval = []
+    q = self.session.query(File).join(Client).filter(Client.sgroup == 'world').join(TModel, File.tmodels)
+    if subworld:
+      q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
+    if tmodel_ids:
+      q = q.filter(TModel.id.in_(tmodel_ids))
     if gender:
       q = q.filter(Client.gender.in_(gender))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-    for k in q:
-      retval[k.id] = (make_path(k.path, directory, extension), k.client_id, k.client_id, k.client_id, k.path) 
+    retval += list(q)
     return retval
 
-  def tfiles(self, directory=None, extension=None, protocol=None,
-      model_ids=None, groups=None, gender=None):
-    """Returns a set of filenames for enrolling T-norm models for score 
-       normalization.
+  def zobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None):
+    """Returns a set of Files to perform Z-norm score normalization.
 
     Keyword Parameters:
-
-    directory
-      A directory name that will be prepended to the final filepath returned
-
-    extension
-      A filename extension that will be appended to the final filepath returned
 
     protocol
       One of the MOBIO protocols ('male', 'female').
@@ -629,187 +478,105 @@ class Database(object):
       If 'None' is given (this is the default), it is considered the same as a 
       tuple with all possible values.
 
-    gender
-      The gender to consider ('male', 'female')
-
-    Returns: A list of filenames
-    considering all the filtering criteria. The keys of the dictionary are 
-    unique identities for each file in the MOBIO database. Conserve these 
-    numbers if you wish to save processing results later on.
-    """
-
-    retval = {}
-    d = self.tobjects(directory, extension, protocol, model_ids, groups, 
-      gender)
-    for k in d: retval[k] = d[k][0]
-
-    return retval
-
-
-  def zobjects(self, directory=None, extension=None, protocol=None,
-      model_ids=None, groups=None, gender=None):
-    """Returns a set of filenames to perform Z-norm score normalization.
-
-    Keyword Parameters:
-
-    directory
-      A directory name that will be prepended to the final filepath returned
-
-    extension
-      A filename extension that will be appended to the final filepath returned
-
-    protocol
-      One of the MOBIO protocols ('male', 'female').
-
-    model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
-      the model_ids is performed.
-
-    groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
-      tuple with all possible values.
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds')
+      Please note that 'onethird' is the default value.
 
     gender
       The gender to consider ('male', 'female')
 
-    Returns: A dictionary containing:
-      - 0: the resolved filenames 
-      - 1: the model id # not applicable in this case
-      - 2: the claimed id attached to the model # not applicable in this case
-      - 3: the real id
-      - 4: the "stem" path (basename of the file)
-
-    considering all the filtering criteria. The keys of the dictionary are 
-    unique identities for each file in the MOBIO database. Conserve these 
-    numbers if you wish to save processing results later on.
+    Returns: A set of Files with the given properties.
     """
+    self.assert_validity()
 
-    def make_path(stem, directory, extension):
-      import os
-      if not extension: extension = ''
-      if directory: return os.path.join(directory, stem + extension)
-      return stem + extension
+    VALID_GROUPS = ('dev', 'eval')
+    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
 
-    VALID_PROTOCOLS = ('female', 'male')
-    VALID_GROUPS = ('dev', 'eval', 'world')
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS)
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS)
-    gender = self.__check_validity__(gender, "gender", VALID_PROTOCOLS)
-    gender = self.__gender_replace__(gender)
+    return self.objects(protocol, None, model_ids, 'world', None, subworld, gender)
 
-    retval = {}
+  def protocol_names(self):
+    """Returns all registered protocol names"""
 
-    if(isinstance(model_ids,str)):
-      model_ids = (model_ids,)
- 
-    # Files used as impostor probes (all the samples from the Z-Norm clients)
-    q = self.session.query(File).join(Client).join(ZClient).\
-            filter(File.client_id == ZClient.client_id)
-    if model_ids:
-      q = q.filter(File.client_id.in_(model_ids))
-    if gender:
-      q = q.filter(Client.gender.in_(gender))
-    q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id)
-    for k in q:
-      retval[k.id] = (make_path(k.path, directory, extension), k.client_id, k.client_id, k.client_id, k.path)
-
+    self.assert_validity()
+    l = self.protocols()
+    retval = [str(k.name) for k in l]
     return retval
 
-  def zfiles(self, directory=None, extension=None, protocol=None,
-      model_ids=None, groups=None, gender=None):
-    """Returns a set of filenames to perform Z-norm score normalization.
+  def protocols(self):
+    """Returns all registered protocols"""
 
-    Keyword Parameters:
+    self.assert_validity()
+    return list(self.session.query(Protocol))
 
-    directory
-      A directory name that will be prepended to the final filepath returned
+  def has_protocol(self, name):
+    """Tells if a certain protocol is available"""
 
-    extension
-      A filename extension that will be appended to the final filepath returned
+    self.assert_validity()
+    return self.session.query(Protocol).filter(Protocol.name==name).count() != 0
 
-    protocol
-      One of the MOBIO protocols ('male', 'female').
+  def protocol(self, name):
+    """Returns the protocol object in the database given a certain name. Raises
+    an error if that does not exist."""
 
-    model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
-      the model_ids is performed.
+    self.assert_validity()
+    return self.session.query(Protocol).filter(Protocol.name==name).one()
 
-    groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
-      tuple with all possible values.
+  def protocol_purposes(self):
+    """Returns all registered protocol purposes"""
 
-    gender
-      The gender to consider ('male', 'female')
+    self.assert_validity()
+    return list(self.session.query(ProtocolPurpose))
 
-    Returns: A list of filenames
-    considering all the filtering criteria. The keys of the dictionary are 
-    unique identities for each file in the MOBIO database. Conserve these 
-    numbers if you wish to save processing results later on.
-    """
+  def purposes(self):
+    """Returns the list of allowed purposes"""
 
-    retval = {}
-    d = self.zobjects(directory, extension, protocol, model_ids, groups, 
-      gender)
-    for k in d: retval[k] = d[k][0]
+    return ProtocolPurpose.purpose_choices
 
-    return retval
+  def paths(self, ids, prefix='', suffix=''):
+    """Returns a full file paths considering particular file ids, a given
+    directory and an extension
 
-  def save_one(self, id, obj, directory, extension):
-    """Saves a single object supporting the bob save() protocol.
-
-    This method will call save() on the the given object using the correct
-    database filename stem for the given id.
-    
     Keyword Parameters:
 
     id
-      The id of the object in the database table "file".
+      The ids of the object in the database table "file". This object should be
+      a python iterable (such as a tuple or list).
 
-    obj
-      The object that needs to be saved, respecting the bob save() protocol.
+    prefix
+      The bit of path to be prepended to the filename stem
 
-    directory
-      This is the base directory to which you want to save the data. The
-      directory is tested for existence and created if it is not there with
-      os.makedirs()
+    suffix
+      The extension determines the suffix that will be appended to the filename
+      stem.
 
-    extension
-      The extension determines the way each of the arrays will be saved.
+    Returns a list (that may be empty) of the fully constructed paths given the
+    file ids.
     """
 
-    import os
-    from bob.io import save
+    self.assert_validity()
 
-    fobj = self.session.query(File).filter_by(id=id).one()
-    fullpath = os.path.join(directory, str(fobj.path) + extension)
-    fulldir = os.path.dirname(fullpath)
-    utils.makedirs_safe(fulldir)
-    save(obj, fullpath)
+    fobj = self.session.query(File).filter(File.id.in_(ids))
+    retval = []
+    for p in ids:
+      retval.extend([k.make_path(prefix, suffix) for k in fobj if k.id == p])
+    return retval
 
-  def save(self, data, directory, extension):
-    """This method takes a dictionary of blitz arrays or bob.database.Array's
-    and saves the data respecting the original arrangement as returned by
-    files().
+  def reverse(self, paths):
+    """Reverses the lookup: from certain stems, returning file ids
 
     Keyword Parameters:
 
-    data
-      A dictionary with two keys 'real' and 'attack', each containing a
-      dictionary mapping file ids from the original database to an object that
-      supports the bob "save()" protocol.
+    paths
+      The filename stems I'll query for. This object should be a python
+      iterable (such as a tuple or list)
 
-    directory
-      This is the base directory to which you want to save the data. The
-      directory is tested for existence and created if it is not there with
-      os.makedirs()
+    Returns a list (that may be empty).
+    """
 
-    extension
-      The extension determines the way each of the arrays will be saved.
-    """    
+    self.assert_validity()
 
-    for key, value in data:
-      self.save_one(key, value, directory, extension)
+    fobj = self.session.query(File).filter(File.path.in_(paths))
+    for p in paths:
+      retval.extend([k.id for k in fobj if k.path == p])
+    return retval
+ 

@@ -5,21 +5,47 @@
 """Table models and functionality for the Mobio database.
 """
 
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, or_, and_, not_
+import os, numpy
+import bob.db.utils
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, or_, and_, not_
 from bob.db.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+subworld_client_association = Table('subworld_client_association', Base.metadata,
+  Column('subworld_id', Integer, ForeignKey('subworld.id')),
+  Column('client_id',  Integer, ForeignKey('client.id')))
+
+subworld_file_association = Table('subworld_file_association', Base.metadata,
+  Column('subworld_id', Integer, ForeignKey('subworld.id')),
+  Column('file_id',  Integer, ForeignKey('file.id')))
+
+tmodel_file_association = Table('tmodel_file_association', Base.metadata,
+  Column('tmodel_iid', Integer, ForeignKey('tmodel.iid')),
+  Column('file_id',  Integer, ForeignKey('file.id')))
+
+protocolPurpose_file_association = Table('protocolPurpose_file_association', Base.metadata,
+  Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
+  Column('file_id',  Integer, ForeignKey('file.id')))
+
 class Client(Base):
+  """Database clients, marked by an integer identifier and the group they belong to"""
+
   __tablename__ = 'client'
-  
+
+  # Key identifier for the client  
   id = Column(Integer, primary_key=True)
-  sgroup = Column(Enum('dev','eval','world')) # do NOT use group (SQL keyword)
-  gender = Column(Enum('f','m'))
-  institute = Column(Enum('idiap', 'manchester', 'surrey', 'oulu', 'brno', 'avignon'))
+  # Gender to which the client belongs to
+  gender_choices = ('female','male')
+  gender = Column(Enum(*gender_choices))
+  # Group to which the client belongs to
+  group_choices = ('dev','eval','world')
+  sgroup = Column(Enum(*group_choices)) # do NOT use group (SQL keyword)
+  # Institute to which the client belongs to
+  institute_choices = ('idiap', 'manchester', 'surrey', 'oulu', 'brno', 'avignon')
+  institute = Column(Enum(*institute_choices))
 
   def __init__(self, id, group, gender, institute):
     self.id = id
@@ -28,24 +54,80 @@ class Client(Base):
     self.institute = institute
 
   def __repr__(self):
-    return "<Client('%d', '%s', '%s', '%s')>" % (self.id, self.sgroup, self.gender, self.institute)
+    return "Client('%d', '%s')" % (self.id, self.sgroup)
 
-class File(Base):
-  __tablename__ = 'file'
+class Subworld(Base):
+  """Database clients belonging to the world group are split in subsets""" 
 
+  __tablename__ = 'subworld'
+
+  # Key identifier for this Subworld object
   id = Column(Integer, primary_key=True)
+  # Subworld to which the client belongs to
+  name = Column(String(20), unique=True)
+
+  # for Python: A direct link to the client
+  clients = relationship("Client", secondary=subworld_client_association, backref=backref("subworld", order_by=id))
+  # for Python: A direct link to the client
+  files = relationship("File", secondary=subworld_file_association, backref=backref("subworld", order_by=id))
+
+  def __init__(self, name):
+    self.name = name
+
+  def __repr__(self):
+    return "Subworld('%s')" % (self.name)
+
+class TModel(Base):
+  """T-Norm models"""
+
+  __tablename__ = 'tmodel'
+
+  iid = Column(Integer, primary_key=True)
+  id = Column(String(9), unique=True)
   client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-  path = Column(String(100), unique=True)
-  session_id = Column(Integer)
-  speech_type = Column(Enum('p','l','r','f'))
-  shot_id = Column(Integer)
-  environment = Column(Enum('i','o'))
-  device = Column(Enum('mobile', 'laptop'))
-  channel_id = Column(Integer)
 
   # for Python
-  client = relationship("Client", backref=backref("client_file"))
+  client = relationship("Client", backref=backref("tmodels", order_by=id))
+  # for Python: A direct link to the client
+  files = relationship("File", secondary=tmodel_file_association, backref=backref("tmodels", order_by=iid))
  
+  def __init__(self, mid, client_id):
+    self.id = mid
+    self.client_id = client_id
+
+  def __repr__(self):
+    return "TModel('%s')" % self.id 
+
+class File(Base):
+  """Generic file container"""
+
+  __tablename__ = 'file'
+
+  # Key identifier for the file
+  id = Column(Integer, primary_key=True)
+  # Key identifier of the client associated with this file
+  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
+  # Unique path to this file inside the database
+  path = Column(String(100), unique=True)
+  # Identifier of the session
+  session_id = Column(Integer)
+  # Speech type
+  speech_type_choices = ('p','l','r','f')
+  speech_type = Column(Enum(*speech_type_choices))
+  # Identifier of the shot
+  shot_id = Column(Integer)
+  # Identifier of the environment
+  environment_choices = ('i', 'o')
+  environment = Column(Enum(*environment_choices))
+  # Identifier of the device
+  device_choices = ('mobile', 'laptop')
+  device = Column(Enum(*device_choices))
+  # Identifier of the channel
+  channel_id = Column(Integer)
+
+  # For Python: A direct link to the client object that this file belongs to
+  client = relationship("Client", backref=backref("files", order_by=id))
+
   def __init__(self, client_id, path, session_id, speech_type, shot_id, environment, device, channel_id):
     self.client_id = client_id
     self.path = path
@@ -57,114 +139,93 @@ class File(Base):
     self.channel_id = channel_id
 
   def __repr__(self):
-    print "<File('%s')>" % self.path
+    return "File('%s')" % self.path
+
+  def make_path(self, directory=None, extension=None):
+    """Wraps the current path so that a complete path is formed
+
+    Keyword parameters:
+
+    directory
+      An optional directory name that will be prefixed to the returned result.
+
+    extension
+      An optional extension that will be suffixed to the returned filename. The
+      extension normally includes the leading ``.`` character as in ``.jpg`` or
+      ``.hdf5``.
+
+    Returns a string containing the newly generated file path.
+    """
+
+    if not directory: directory = ''
+    if not extension: extension = ''
+
+    return os.path.join(directory, self.path + extension)
+
+  def save(self, data, directory=None, extension='.hdf5'):
+    """Saves the input data at the specified location and using the given
+    extension.
+
+    Keyword parameters:
+
+    data
+      The data blob to be saved (normally a :py:class:`numpy.ndarray`).
+
+    directory
+      If not empty or None, this directory is prefixed to the final file
+      destination
+
+    extension
+      The extension of the filename - this will control the type of output and
+      the codec for saving the input blob.
+    """
+
+    path = self.make_path(directory, extension)
+    bob.utils.makedirs_safe(os.path.dirname(path))
+    bob.io.save(data, path)
+
 
 class Protocol(Base):
+  """BANCA protocols"""
+
   __tablename__ = 'protocol'
-  
+
+  # Unique identifier for this protocol object
   id = Column(Integer, primary_key=True)
-  name = Column(String(8))
-  purpose = Column(Enum('enrol', 'probe'))
-  speech_type = Column(Enum('p','l','r','f'))
-  
-  def __init__(self, name, purpose, speech_type):
+  # Name of the protocol associated with this object
+  name = Column(String(20), unique=True)
+
+  def __init__(self, name):
     self.name = name
+
+  def __repr__(self):
+    return "Protocol('%s')" % (self.name,)
+
+class ProtocolPurpose(Base):
+  """BANCA protocol purposes"""
+
+  __tablename__ = 'protocolPurpose'
+
+  # Unique identifier for this protocol purpose object
+  id = Column(Integer, primary_key=True)
+  # Id of the protocol associated with this protocol purpose object
+  protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
+  # Group associated with this protocol purpose object
+  group_choices = ('world', 'dev', 'eval')
+  sgroup = Column(Enum(*group_choices))
+  # Purpose associated with this protocol purpose object
+  purpose_choices = ('train', 'enrol', 'probe')
+  purpose = Column(Enum(*purpose_choices))
+
+  # For Python: A direct link to the Protocol object that this ProtocolPurpose belongs to
+  protocol = relationship("Protocol", backref=backref("purposes", order_by=id))
+  # For Python: A direct link to the File objects associated with this ProtcolPurpose
+  files = relationship("File", secondary=protocolPurpose_file_association, backref=backref("protocol_purposes", order_by=id))
+
+  def __init__(self, protocol_id, sgroup, purpose):
+    self.protocol_id = protocol_id
+    self.sgroup = sgroup
     self.purpose = purpose
-    self.speech_type = speech_type
 
   def __repr__(self):
-    return "<Protocol('%s', '%s', '%s')>" % (self.name, self.purpose, self.speech_type)
-
-class ProtocolEnrolSession(Base):
-  __tablename__ = 'protocolEnrolSession'
-  
-  id = Column(Integer, primary_key=True)
-  name = Column(String(8))
-  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-  session_id = Column(Integer)
-  
-  # for Python
-  client = relationship("Client", backref=backref("client_protocolEnrolSession"))
- 
-  def __init__(self, name, client_id, session_id):
-    self.name = name
-    self.client_id = client_id
-    self.session_id = session_id
-
-  def __repr__(self):
-    return "<ProtocolEnrolSession('%s', '%d', '%d')>" % (self.name, self.client_id, self.session_id)
-
-class TModel(Base):
-  __tablename__ = 'tmodel'
-
-  id = Column(String(9), primary_key=True)
-  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-  session_id = Column(Integer)
-  speech_type = Column(Enum('p','l','r','f'))
-
-  # for Python
-  client = relationship("Client", backref=backref("client_tmodel"))
- 
-  def __init__(self, mid, client_id, session_id, speech_type):
-    self.id = mid
-    self.client_id = client_id
-    self.session_id = session_id
-    self.speech_type = speech_type
-
-  def __repr__(self):
-    return "<TModel('%d', '%d', '%s')>" % (self.client_id, self.session_id, self.speech_type) 
-
-class ZClient(Base):
-  __tablename__ = 'zclient'
-
-  id = Column(Integer, primary_key=True)
-  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-
-  # for Python
-  client = relationship("Client", backref=backref("client_zfile"))
- 
-  def __init__(self, client_id):
-    self.client_id = client_id
-
-  def __repr__(self):
-    return "<ZClient('%d')>" % (self.client_id) 
-
-class SubworldClient(Base):
-  __tablename__ = 'subworldclient'
-
-  id = Column(Integer, primary_key=True)
-  name = Column(String(20)) 
-  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-
-  # for Python
-  client = relationship("Client", backref=backref("client_subworldClient"))
- 
-  def __init__(self, name, client_id):
-    self.name = name
-    self.client_id = client_id
-
-  def __repr__(self):
-    return "<SubworldClient('%s', '%d')>" % (self.name, self.client_id) 
-
-class SubworldFile(Base):
-  __tablename__ = 'subworldfile'
- 
-  id = Column(Integer, primary_key=True)
-  name = Column(String(20)) 
-  client_id = Column(Integer, ForeignKey('client.id')) # for SQL
-  session_id = Column(Integer)
-  speech_type = Column(Enum('p','l','r','f'))
-  shot_id = Column(Integer)
-
-  # for Python
-  client = relationship("Client", backref=backref("client_subworldFile"))
- 
-  def __init__(self, name, client_id, session_id, speech_type, shot_id):
-    self.name = name
-    self.client_id = client_id
-    self.session_id = session_id
-    self.speech_type = speech_type
-    self.shot_id = shot_id
-
-  def __repr__(self):
-    return "<SubworldFile('%s', '%d', '%d', '%d', '%d')>" % (self.name, self.client_id, self.session_id, self.speech_type, self.shot_id) 
+    return "ProtocolPurpose('%s', '%s', '%s')" % (self.protocol.name, self.sgroup, self.purpose)
