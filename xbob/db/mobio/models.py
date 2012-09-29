@@ -23,7 +23,7 @@ subworld_file_association = Table('subworld_file_association', Base.metadata,
   Column('file_id',  Integer, ForeignKey('file.id')))
 
 tmodel_file_association = Table('tmodel_file_association', Base.metadata,
-  Column('tmodel_iid', Integer, ForeignKey('tmodel.iid')),
+  Column('tmodel_id', String, ForeignKey('tmodel.id')),
   Column('file_id',  Integer, ForeignKey('file.id')))
 
 protocolPurpose_file_association = Table('protocolPurpose_file_association', Base.metadata,
@@ -68,7 +68,7 @@ class Subworld(Base):
 
   # for Python: A direct link to the client
   clients = relationship("Client", secondary=subworld_client_association, backref=backref("subworld", order_by=id))
-  # for Python: A direct link to the client
+  # for Python: A direct link to the files
   files = relationship("File", secondary=subworld_file_association, backref=backref("subworld", order_by=id))
 
   def __init__(self, name):
@@ -82,14 +82,13 @@ class TModel(Base):
 
   __tablename__ = 'tmodel'
 
-  iid = Column(Integer, primary_key=True)
-  id = Column(String(9), unique=True)
+  id = Column(String(9), primary_key=True) # Overhead in size is negligible
   client_id = Column(Integer, ForeignKey('client.id')) # for SQL
 
-  # for Python
-  client = relationship("Client", backref=backref("tmodels", order_by=id))
   # for Python: A direct link to the client
-  files = relationship("File", secondary=tmodel_file_association, backref=backref("tmodels", order_by=iid))
+  client = relationship("Client", backref=backref("tmodels", order_by=id))
+  # for Python: A direct link to the files
+  files = relationship("File", secondary=tmodel_file_association, backref=backref("tmodels", order_by=id))
  
   def __init__(self, mid, client_id):
     self.id = mid
@@ -184,9 +183,8 @@ class File(Base):
     bob.utils.makedirs_safe(os.path.dirname(path))
     bob.io.save(data, path)
 
-
 class Protocol(Base):
-  """BANCA protocols"""
+  """MOBIO protocols"""
 
   __tablename__ = 'protocol'
 
@@ -202,7 +200,7 @@ class Protocol(Base):
     return "Protocol('%s')" % (self.name,)
 
 class ProtocolPurpose(Base):
-  """BANCA protocol purposes"""
+  """MOBIO protocol purposes"""
 
   __tablename__ = 'protocolPurpose'
 
@@ -211,7 +209,7 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-  group_choices = ('world', 'dev', 'eval')
+  group_choices = Client.group_choices
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
   purpose_choices = ('train', 'enrol', 'probe')

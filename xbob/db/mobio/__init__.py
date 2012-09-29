@@ -6,6 +6,6 @@
 """
 
 from .query import Database
-from .models import Client, Subworld, File, Protocol, ProtocolPurpose
+from .models import Client, Subworld, TModel, File, Protocol, ProtocolPurpose
 
 __all__ = dir()

@@ -119,6 +119,13 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertEqual(len(db.objects(protocol='male', groups='eval', purposes='probe', classes='client', model_ids=1)), 105)
     self.assertEqual(len(db.objects(protocol='male', groups='eval', purposes='probe', classes='impostor', model_ids=1)), 3885)
 
+
+    # T-Norm and Z-Norm files
+    self.assertEqual(len(db.tobjects()), 960)
+    self.assertEqual(len(db.tobjects(tmodel_ids=('204_01',))), 5)
+    self.assertEqual(len(db.zobjects()), 3072)
+    self.assertEqual(len(db.zobjects(model_ids=(204,))), 192)
+
   def test04_manage_dumplist_1(self):
 
     from bob.db.script.dbmanage import main

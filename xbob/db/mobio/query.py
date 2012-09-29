@@ -61,7 +61,7 @@ class Database(object):
     return ProtocolPurpose.group_choices
 
   def genders(self):
-    """Returns the list of genders: 'm' for male and 'f' for female"""
+    """Returns the list of genders"""
 
     return Client.gender_choices
 
@@ -99,8 +99,8 @@ class Database(object):
       Please note that world data are protocol/gender independent
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
-      In order to be considered, "world" should be in groups and only one 
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
+      In order to be considered, 'world' should be in groups and only one 
       split should be specified. 
 
     gender
@@ -115,7 +115,7 @@ class Database(object):
     VALID_GROUPS = self.groups()
     VALID_SUBWORLDS = self.subworld_names()
     VALID_GENDERS = self.genders()
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
+    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
     groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
     subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
     gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
@@ -155,12 +155,12 @@ class Database(object):
       One of the MOBIO protocols ('male', 'female').
     
     groups
-      The groups to which the clients belong ("dev", "eval").
+      The groups to which the clients belong ('dev', 'eval').
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       Please note that 'onethird' is the default value.
 
     gender
@@ -194,7 +194,7 @@ class Database(object):
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       Please note that 'onethird' is the default value.
 
     gender
@@ -223,7 +223,7 @@ class Database(object):
       Please note that world data are protocol/gender independent
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       In order to be considered, 'world' should be in groups and only one 
       split should be specified. 
 
@@ -249,7 +249,7 @@ class Database(object):
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       Please note that 'onethird' is the default value.
 
     gender
@@ -325,7 +325,7 @@ class Database(object):
       default), it is considered the same as a tuple with all possible values.
 
     subworld
-      Specify a split of the world data ("twothirds", "")
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       In order to be considered, "world" should be in groups and only one 
       split should be specified. 
 
@@ -424,7 +424,7 @@ class Database(object):
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       Please note that 'onethird' is the default value.
 
     gender
@@ -452,13 +452,14 @@ class Database(object):
 
     # Now query the database
     retval = []
-    q = self.session.query(File).join(Client).filter(Client.sgroup == 'world').join(TModel, File.tmodels)
+    q = self.session.query(File)
     if subworld:
       q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
+    q = q.join(TModel, File.tmodels)
     if tmodel_ids:
       q = q.filter(TModel.id.in_(tmodel_ids))
     if gender:
-      q = q.filter(Client.gender.in_(gender))
+      q = q.join(Client).filter(Client.gender.in_(gender))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
     retval += list(q)
     return retval
@@ -482,7 +483,7 @@ class Database(object):
       tuple with all possible values.
 
     subworld
-      Specify a split of the world data ('onethird', 'twothirds')
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
       Please note that 'onethird' is the default value.
 
     gender

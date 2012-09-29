@@ -345,7 +345,7 @@ def add_subworlds(session, verbose):
         for c_file in q:
           if verbose: print "    Adding file '%s' to subworld '%s'..." %(c_file.path, snames[k])
           su.files.append(c_file)
-    else:
+    else: # twothirds-subsampled: Files were randomly selected from twothirds
       # Add clients
       for c_id in l:
         if verbose: print "  Adding client '%d' to subworld '%s'..." %(c_id, snames[k])
@@ -413,7 +413,6 @@ def add_protocols(session, verbose):
       if(key == 0):
         world_list = True
         session_list_in = False
-        speech_list = [] #TODO
       if(key == 1 or key == 3):
         world_list = False
         session_list_in = True
@@ -449,6 +448,8 @@ def add_protocols(session, verbose):
 def add_tmodels(session, verbose):
   """Adds T-Norm models"""
 
+  # T-Models: client followed by list of session_ids (one session is used for one model, 
+  # leading to several T-Norm models per identity
   tmodels_list = [(214, ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']),
                   (218, ['01', '02', '03', '09', '10', '11', '12', '13', '14', '15', '16', '17']),
                   (229, ['01', '02', '03', '06', '07', '08', '09', '10', '11', '12', '13', '14']),
