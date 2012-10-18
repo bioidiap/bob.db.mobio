@@ -36,24 +36,24 @@ class MobioDatabaseTest(unittest.TestCase):
     c_dev = db.clients(groups='dev')
     self.assertEqual(len(c_dev), 42)
     c_eval = db.clients(groups='eval')
-    self.assertEqual(len(c_eval), 58) 
+    self.assertEqual(len(c_eval), 58)
     c_world = db.clients(groups='world')
-    self.assertEqual(len(c_world), 50) 
-    # Check client ids 
+    self.assertEqual(len(c_world), 50)
+    # Check client ids
     self.assertTrue(db.has_client_id(204))
     self.assertFalse(db.has_client_id(395))
     # Check subworld
-    self.assertEqual(len(db.clients(groups='world', subworld='onethird')), 16) 
-    self.assertEqual(len(db.clients(groups='world', subworld='twothirds')), 34) 
-    self.assertEqual(len(db.clients(groups='world', subworld='twothirds-subsampled')), 34) 
+    self.assertEqual(len(db.clients(groups='world', subworld='onethird')), 16)
+    self.assertEqual(len(db.clients(groups='world', subworld='twothirds')), 34)
+    self.assertEqual(len(db.clients(groups='world', subworld='twothirds-subsampled')), 34)
     # Check files relationship
     c = db.client(204)
     len(c.files)
     # Check T-Norm and Z-Norm clients
-    self.assertEqual(len(db.tclients()), 16) 
-    self.assertEqual(len(db.zclients()), 16) 
+    self.assertEqual(len(db.tclients()), 16)
+    self.assertEqual(len(db.zclients()), 16)
     # Check T-Norm models
-    self.assertEqual(len(db.tmodels()), 192) 
+    self.assertEqual(len(db.tmodels()), 192)
 
   def test02_protocols(self):
 
@@ -68,7 +68,7 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertTrue(db.has_subworld('onethird'))
 
   def test03_files(self):
-  
+
     db = Database()
 
     # Protocol female
@@ -122,7 +122,7 @@ class MobioDatabaseTest(unittest.TestCase):
 
     # T-Norm and Z-Norm files
     self.assertEqual(len(db.tobjects()), 960)
-    self.assertEqual(len(db.tobjects(tmodel_ids=('204_01',))), 5)
+    self.assertEqual(len(db.tobjects(model_ids=('204_01',))), 5)
     self.assertEqual(len(db.zobjects()), 3072)
     self.assertEqual(len(db.zobjects(model_ids=(204,))), 192)
 
@@ -133,7 +133,7 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertEqual(main('mobio dumplist --self-test'.split()), 0)
 
   def test05_manage_dumplist_2(self):
-    
+
     from bob.db.script.dbmanage import main
 
     self.assertEqual(main('mobio dumplist --protocol=male --classes=client --groups=dev --purposes=enrol --self-test'.split()), 0)

@@ -32,7 +32,7 @@ def dumplist(args):
 
   for f in r:
     output.write('%s\n' % (f.make_path(args.directory, args.extension),))
-  
+
   return 0
 
 def add_command(subparsers):

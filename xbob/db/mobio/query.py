@@ -25,7 +25,7 @@ class Database(object):
   def __init__(self):
     # opens a session to the database - keep it open until the end
     self.connect()
-  
+
   def connect(self):
     """Tries connecting or re-connecting to the database"""
     if not os.path.exists(SQLITE_FILE):
@@ -48,7 +48,7 @@ class Database(object):
   def __check_validity__(self, l, obj, valid, default):
     """Checks validity of user input data against a set of valid values"""
     if not l: return default
-    elif not isinstance(l, (tuple,list)): 
+    elif not isinstance(l, (tuple,list)):
       return self.__check_validity__((l,), obj, valid, default)
     for k in l:
       if k not in valid:
@@ -100,8 +100,8 @@ class Database(object):
 
     subworld
       Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
-      In order to be considered, 'world' should be in groups and only one 
-      split should be specified. 
+      In order to be considered, 'world' should be in groups and only one
+      split should be specified.
 
     gender
       The gender to consider ('male', 'female')
@@ -153,7 +153,7 @@ class Database(object):
 
     protocol
       One of the MOBIO protocols ('male', 'female').
-    
+
     groups
       The groups to which the clients belong ('dev', 'eval').
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
@@ -187,7 +187,7 @@ class Database(object):
 
     protocol
       One of the MOBIO protocols ('male', 'female').
-    
+
     groups
       The groups to which the clients belong ('dev', 'eval').
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
@@ -224,8 +224,8 @@ class Database(object):
 
     subworld
       Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
-      In order to be considered, 'world' should be in groups and only one 
-      split should be specified. 
+      In order to be considered, 'world' should be in groups and only one
+      split should be specified.
 
     gender
       The gender to consider ('male', 'female')
@@ -242,7 +242,7 @@ class Database(object):
 
     protocol
       One of the MOBIO protocols ('male', 'female').
-    
+
     groups
       The groups to which the clients belong ('dev', 'eval').
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
@@ -284,7 +284,7 @@ class Database(object):
 
   def get_client_id_from_model_id(self, model_id):
     """Returns the client_id attached to the given model_id
-    
+
     Keyword Parameters:
 
     model_id
@@ -294,7 +294,7 @@ class Database(object):
     """
     return model_id
 
-  def objects(self, protocol=None, purposes=None, model_ids=None, 
+  def objects(self, protocol=None, purposes=None, model_ids=None,
       groups=None, classes=None, subworld=None, gender=None):
     """Returns a set of Files for the specific query by the user.
 
@@ -305,29 +305,29 @@ class Database(object):
 
     purposes
       The purposes required to be retrieved ('enrol', 'probe') or a tuple
-      with several of them. If 'None' is given (this is the default), it is 
+      with several of them. If 'None' is given (this is the default), it is
       considered the same as a tuple with all possible values. This field is
       ignored for the data from the "world" group.
 
     model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
+      Only retrieves the files for the provided list of model ids (claimed
+      client id).  If 'None' is given (this is the default), no filter over
       the model_ids is performed.
 
     groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
+      One of the groups ('dev', 'eval', 'world') or a tuple with several of them.
+      If 'None' is given (this is the default), it is considered the same as a
       tuple with all possible values.
 
     classes
-      The classes (types of accesses) to be retrieved ('client', 'impostor') 
-      or a tuple with several of them. If 'None' is given (this is the 
+      The classes (types of accesses) to be retrieved ('client', 'impostor')
+      or a tuple with several of them. If 'None' is given (this is the
       default), it is considered the same as a tuple with all possible values.
 
     subworld
       Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
-      In order to be considered, "world" should be in groups and only one 
-      split should be specified. 
+      In order to be considered, "world" should be in groups and only one
+      split should be specified.
 
     gender
       The gender to consider ('male', 'female')
@@ -369,7 +369,7 @@ class Database(object):
         q = q.filter(File.client_id.in_(model_ids))
       q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
       retval += list(q)
-    
+
     if ('dev' in groups or 'eval' in groups):
       if('enrol' in purposes):
         q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
@@ -389,7 +389,7 @@ class Database(object):
             q = q.filter(File.gender.in_(gender))
           if model_ids:
             q = q.filter(Client.id.in_(model_ids))
-          q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)  
+          q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
           retval += list(q)
 
         if('impostor' in classes):
@@ -401,22 +401,22 @@ class Database(object):
             q = q.filter(not_(File.client_id.in_(model_ids)))
           q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
           retval += list(q)
-    
+
     return list(set(retval)) # To remove duplicates
 
-  def tobjects(self, protocol=None, tmodel_ids=None, groups=None, subworld='onethird', gender=None):
-    """Returns a set of filenames for enroling T-norm models for score 
+  def tobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None):
+    """Returns a set of filenames for enroling T-norm models for score
        normalization.
 
     Keyword Parameters:
 
     protocol
       One of the MOBIO protocols ('male', 'female').
-    
-    tmodel_ids
-      Only retrieves the files for the provided list of tmodel ids.  
-      If 'None' is given (this is the default), no filter over 
-      the tmodel_ids is performed.
+
+    model_ids
+      Only retrieves the files for the provided list of model ids.
+      If 'None' is given (this is the default), no filter over
+      the model_ids is performed.
 
     groups
       The groups to which the clients belong ('dev', 'eval').
@@ -445,10 +445,10 @@ class Database(object):
     subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
     gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
 
-    if(tmodel_ids is None):
-      tmodel_ids = ()
-    elif isinstance(tmodel_ids, (str,unicode)):
-      tmodel_ids = (tmodel_ids,)
+    if(model_ids is None):
+      model_ids = ()
+    elif isinstance(model_ids, (str,unicode)):
+      model_ids = (model_ids,)
 
     # Now query the database
     retval = []
@@ -456,8 +456,8 @@ class Database(object):
     if subworld:
       q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
     q = q.join(TModel, File.tmodels)
-    if tmodel_ids:
-      q = q.filter(TModel.id.in_(tmodel_ids))
+    if model_ids:
+      q = q.filter(TModel.id.in_(model_ids))
     if gender:
       q = q.join(Client).filter(Client.gender.in_(gender))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
@@ -473,13 +473,13 @@ class Database(object):
       One of the MOBIO protocols ('male', 'female').
 
     model_ids
-      Only retrieves the files for the provided list of model ids (claimed 
-      client id).  If 'None' is given (this is the default), no filter over 
+      Only retrieves the files for the provided list of model ids (claimed
+      client id).  If 'None' is given (this is the default), no filter over
       the model_ids is performed.
 
     groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them. 
-      If 'None' is given (this is the default), it is considered the same as a 
+      One of the groups ('dev', 'eval', 'world') or a tuple with several of them.
+      If 'None' is given (this is the default), it is considered the same as a
       tuple with all possible values.
 
     subworld
@@ -583,4 +583,4 @@ class Database(object):
     for p in paths:
       retval.extend([k.id for k in fobj if k.path == p])
     return retval
- 
+
