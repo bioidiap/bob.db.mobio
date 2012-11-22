@@ -35,7 +35,7 @@ class Client(Base):
 
   __tablename__ = 'client'
 
-  # Key identifier for the client  
+  # Key identifier for the client
   id = Column(Integer, primary_key=True)
   # Gender to which the client belongs to
   gender_choices = ('female','male')
@@ -57,7 +57,7 @@ class Client(Base):
     return "Client('%d', '%s')" % (self.id, self.sgroup)
 
 class Subworld(Base):
-  """Database clients belonging to the world group are split in subsets""" 
+  """Database clients belonging to the world group are split in subsets"""
 
   __tablename__ = 'subworld'
 
@@ -89,13 +89,13 @@ class TModel(Base):
   client = relationship("Client", backref=backref("tmodels", order_by=id))
   # for Python: A direct link to the files
   files = relationship("File", secondary=tmodel_file_association, backref=backref("tmodels", order_by=id))
- 
+
   def __init__(self, mid, client_id):
     self.id = mid
     self.client_id = client_id
 
   def __repr__(self):
-    return "TModel('%s')" % self.id 
+    return "TModel('%s')" % self.id
 
 class File(Base):
   """Generic file container"""

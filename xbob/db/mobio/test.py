@@ -75,6 +75,7 @@ class MobioDatabaseTest(unittest.TestCase):
     # World group
     self.assertEqual(len(db.objects(protocol='female', groups='world')), 9600)
     self.assertEqual(len(db.objects(protocol='female', groups='world', purposes='train')), 9600)
+    self.assertEqual(len(db.objects(protocol='female', groups='world', gender='female')), 2496)
     self.assertEqual(len(db.objects(protocol='female', groups='world', purposes='train', model_ids=204)), 192)
 
     # Dev group
@@ -99,6 +100,7 @@ class MobioDatabaseTest(unittest.TestCase):
     # World group
     self.assertEqual(len(db.objects(protocol='male', groups='world')), 9600)
     self.assertEqual(len(db.objects(protocol='male', groups='world', purposes='train')), 9600)
+    self.assertEqual(len(db.objects(protocol='male', groups='world', gender='male')), 7104)
     self.assertEqual(len(db.objects(protocol='male', groups='world', purposes='train', model_ids=204)), 192)
 
     # Dev group
