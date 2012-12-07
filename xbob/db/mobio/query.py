@@ -11,11 +11,11 @@ from bob.db import utils
 from .models import *
 from .driver import Interface
 
-INFO = Interface()
+import xbob.db.verification.utils
 
-SQLITE_FILE = INFO.files()[0]
+SQLITE_FILE = Interface().files()[0]
 
-class Database(object):
+class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.utils.ZTDatabase):
   """The dataset class opens and maintains a connection opened to the Database.
 
   It provides many different ways to probe for the characteristics of the data
@@ -23,37 +23,9 @@ class Database(object):
   """
 
   def __init__(self):
-    # opens a session to the database - keep it open until the end
-    self.connect()
-
-  def connect(self):
-    """Tries connecting or re-connecting to the database"""
-    if not os.path.exists(SQLITE_FILE):
-      self.session = None
-
-    else:
-      self.session = utils.session_try_readonly(INFO.type(), SQLITE_FILE)
-
-  def is_valid(self):
-    """Returns if a valid session has been opened for reading the database"""
-
-    return self.session is not None
-
-  def assert_validity(self):
-    """Raise a RuntimeError if the database backend is not available"""
-
-    if not self.is_valid():
-      raise RuntimeError, "Database '%s' cannot be found at expected location '%s'. Create it and then try re-connecting using Database.connect()" % (INFO.name(), SQLITE_FILE)
-
-  def __check_validity__(self, l, obj, valid, default):
-    """Checks validity of user input data against a set of valid values"""
-    if not l: return default
-    elif not isinstance(l, (tuple,list)):
-      return self.__check_validity__((l,), obj, valid, default)
-    for k in l:
-      if k not in valid:
-        raise RuntimeError, 'Invalid %s "%s". Valid values are %s, or lists/tuples of those' % (obj, k, valid)
-    return l
+    # call base class constructors to open a session to the database
+    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE)
+    xbob.db.verification.utils.ZTDatabase.__init__(self)
 
   def groups(self):
     """Returns the names of all registered groups"""
@@ -76,15 +48,13 @@ class Database(object):
   def subworlds(self):
     """Returns the list of subworlds"""
 
-    self.assert_validity()
-
-    return list(self.session.query(Subworld))
+    return list(self.query(Subworld))
 
   def has_subworld(self, name):
     """Tells if a certain subworld is available"""
 
     self.assert_validity()
-    return self.session.query(Subworld).filter(Subworld.name==name).count() != 0
+    return self.query(Subworld).filter(Subworld.name==name).count() != 0
 
   def clients(self, protocol=None, groups=None, subworld=None, gender=None):
     """Returns a list of Clients for the specific query by the user.
@@ -109,19 +79,13 @@ class Database(object):
     Returns: A list containing all the clients which have the given properties.
     """
 
-    self.assert_validity()
-
-    VALID_PROTOCOLS = self.protocol_names()
-    VALID_GROUPS = self.groups()
-    VALID_SUBWORLDS = self.subworld_names()
-    VALID_GENDERS = self.genders()
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
-    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names(), [])
+    groups = self.check_parameters_for_validity(groups, "group", self.groups(), [])
+    subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
+    gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     # List of the clients
-    q = self.session.query(Client)
+    q = self.query(Client)
     if protocol:
       q = q.filter(Client.gender.in_(protocol))
     if groups:
@@ -136,15 +100,13 @@ class Database(object):
   def has_client_id(self, id):
     """Returns True if we have a client with a certain integer identifier"""
 
-    self.assert_validity()
-    return self.session.query(Client).filter(Client.id==id).count() != 0
+    return self.query(Client).filter(Client.id==id).count() != 0
 
   def client(self, id):
     """Returns the Client object in the database given a certain id. Raises
     an error if that does not exist."""
 
-    self.assert_validity()
-    return self.session.query(Client).filter(Client.id==id).one()
+    return self.query(Client).filter(Client.id==id).one()
 
   def tclients(self, protocol=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of T-Norm clients for the specific query by the user.
@@ -155,7 +117,7 @@ class Database(object):
       One of the MOBIO protocols ('male', 'female').
 
     groups
-      The groups to which the clients belong ('dev', 'eval').
+      Ignored.
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
@@ -169,15 +131,6 @@ class Database(object):
     Returns: A list containing all the T-norm clients belonging to the given group.
     """
 
-    VALID_PROTOCOLS = self.protocol_names()
-    VALID_GROUPS = ('dev', 'eval')
-    VALID_SUBWORLDS = self.subworld_names()
-    VALID_GENDERS = self.genders()
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
-    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
-
     return self.clients(protocol, 'world', subworld, gender)
 
   def zclients(self, protocol=None, groups=None, subworld='onethird', gender=None):
@@ -189,7 +142,7 @@ class Database(object):
       One of the MOBIO protocols ('male', 'female').
 
     groups
-      The groups to which the clients belong ('dev', 'eval').
+      Ignored.
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
@@ -202,11 +155,6 @@ class Database(object):
 
     Returns: A list containing all the Z-norm clients belonging to the given group.
     """
-
-    self.assert_validity()
-
-    VALID_GROUPS = ('dev', 'eval')
-    groups = self.__check_validity__(groups, 'group', VALID_GROUPS, '')
 
     return self.clients(protocol, 'world', subworld, gender)
 
@@ -235,16 +183,41 @@ class Database(object):
 
     return self.clients(protocol, groups, subworld, gender)
 
+  def model_ids(self, protocol=None, groups=None, subworld=None, gender=None):
+    """Returns a set of models ids for the specific query by the user.
+
+    Keyword Parameters:
+
+    protocol
+      One of the Mobio protocols ('male', 'female').
+
+    groups
+      The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
+      Please note that world data are protocol/gender independent
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
+      In order to be considered, 'world' should be in groups and only one
+      split should be specified.
+
+    gender
+      The gender to consider ('male', 'female')
+
+    Returns: A list containing the ids of all models belonging to the given group.
+    """
+
+    return [client.id for client in self.clients(protocol, groups, subworld, gender)]
+
   def tmodels(self, protocol=None, groups=None, subworld='onethird', gender=None):
     """Returns a set of T-Norm models for the specific query by the user.
 
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('male', 'female').
+      Ignored.
 
     groups
-      The groups to which the clients belong ('dev', 'eval').
+      Ignored.
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
@@ -258,19 +231,11 @@ class Database(object):
     Returns: A list containing all the T-norm models belonging to the given group.
     """
 
-    self.assert_validity()
-
-    VALID_PROTOCOLS = self.protocol_names()
-    VALID_GROUPS = ('dev', 'eval')
-    VALID_SUBWORLDS = self.subworld_names()
-    VALID_GENDERS = self.genders()
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, '')
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, '')
-    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, '')
+    subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
+    gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     # List of the clients
-    q = self.session.query(TModel).join(Client)
+    q = self.query(TModel).join(Client)
     if subworld:
       q = q.join(Subworld, Client.subworld).filter(Subworld.name.in_(subworld))
     if gender:
@@ -278,9 +243,29 @@ class Database(object):
     q = q.order_by(TModel.id)
     return list(q)
 
+  def tmodel_ids(self, protocol=None, groups=None, subworld='onethird', gender=None):
+    """Returns a list of ids of T-Norm models for the specific query by the user.
 
-    return self.tclients(protocol, groups, subworld, gender)
+    Keyword Parameters:
 
+    protocol
+      Ignored.
+
+    groups
+      Ignored.
+      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
+      Please note that 'onethird' is the default value.
+
+    gender
+      The gender to consider ('male', 'female')
+
+    Returns: A list containing the ids of all T-norm models belonging to the given group.
+    """
+    return [tmodel.id for tmodel in self.tmodels(protocol, groups, subworld, gender)]
 
   def get_client_id_from_model_id(self, model_id):
     """Returns the client_id attached to the given model_id
@@ -335,21 +320,12 @@ class Database(object):
     Returns: A set of Files with the given properties.
     """
 
-    self.assert_validity()
-
-    VALID_PROTOCOLS = self.protocol_names()
-    VALID_PURPOSES = self.purposes()
-    VALID_GROUPS = self.groups()
-    VALID_CLASSES = ('client', 'impostor')
-    VALID_SUBWORLDS = self.subworld_names()
-    VALID_GENDERS = self.genders()
-
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
-    purposes = self.__check_validity__(purposes, "purpose", VALID_PURPOSES, VALID_PURPOSES)
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, VALID_GROUPS)
-    classes = self.__check_validity__(classes, "class", VALID_CLASSES, VALID_CLASSES)
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
-    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
+    purposes = self.check_parameters_for_validity(purposes, "purpose", self.purposes())
+    groups = self.check_parameters_for_validity(groups, "group", self.groups())
+    classes = self.check_parameters_for_validity(classes, "class", ('client', 'impostor'))
+    subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
+    gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     import collections
     if(model_ids is None):
@@ -360,7 +336,7 @@ class Database(object):
     # Now query the database
     retval = []
     if 'world' in groups:
-      q = self.session.query(File).join(Client).filter(Client.sgroup == 'world')
+      q = self.query(File).join(Client).filter(Client.sgroup == 'world')
       if subworld:
         q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
       if gender:
@@ -372,7 +348,7 @@ class Database(object):
 
     if ('dev' in groups or 'eval' in groups):
       if('enrol' in purposes):
-        q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+        q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
               filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enrol'))
         if gender:
           q = q.filter(Client.gender.in_(gender))
@@ -383,7 +359,7 @@ class Database(object):
 
       if('probe' in purposes):
         if('client' in classes):
-          q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+          q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
@@ -393,7 +369,7 @@ class Database(object):
           retval += list(q)
 
         if('impostor' in classes):
-          q = self.session.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+          q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
@@ -411,7 +387,7 @@ class Database(object):
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('male', 'female').
+      Ignored.
 
     model_ids
       Only retrieves the files for the provided list of model ids.
@@ -419,7 +395,7 @@ class Database(object):
       the model_ids is performed.
 
     groups
-      The groups to which the clients belong ('dev', 'eval').
+      Ignored.
       For the MOBIO database, this has no impact as the Z-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
@@ -433,17 +409,8 @@ class Database(object):
     Returns: A set of Files with the given properties.
     """
 
-    self.assert_validity()
-
-    VALID_PROTOCOLS = self.protocol_names()
-    VALID_GROUPS = ('dev', 'eval')
-    VALID_SUBWORLDS = self.subworld_names()
-    VALID_GENDERS = self.genders()
-
-    protocol = self.__check_validity__(protocol, "protocol", VALID_PROTOCOLS, VALID_PROTOCOLS)
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
-    subworld = self.__check_validity__(subworld, "subworld", VALID_SUBWORLDS, "")
-    gender = self.__check_validity__(gender, "gender", VALID_GENDERS, "")
+    subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
+    gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     if(model_ids is None):
       model_ids = ()
@@ -452,7 +419,7 @@ class Database(object):
 
     # Now query the database
     retval = []
-    q = self.session.query(File)
+    q = self.query(File)
     if subworld:
       q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
     q = q.join(TModel, File.tmodels)
@@ -478,9 +445,7 @@ class Database(object):
       the model_ids is performed.
 
     groups
-      One of the groups ('dev', 'eval', 'world') or a tuple with several of them.
-      If 'None' is given (this is the default), it is considered the same as a
-      tuple with all possible values.
+      Ignored.
 
     subworld
       Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
@@ -491,17 +456,12 @@ class Database(object):
 
     Returns: A set of Files with the given properties.
     """
-    self.assert_validity()
-
-    VALID_GROUPS = ('dev', 'eval')
-    groups = self.__check_validity__(groups, "group", VALID_GROUPS, '')
 
     return self.objects(protocol, None, model_ids, 'world', None, subworld, gender)
 
   def protocol_names(self):
     """Returns all registered protocol names"""
 
-    self.assert_validity()
     l = self.protocols()
     retval = [str(k.name) for k in l]
     return retval
@@ -509,27 +469,23 @@ class Database(object):
   def protocols(self):
     """Returns all registered protocols"""
 
-    self.assert_validity()
-    return list(self.session.query(Protocol))
+    return list(self.query(Protocol))
 
   def has_protocol(self, name):
     """Tells if a certain protocol is available"""
 
-    self.assert_validity()
-    return self.session.query(Protocol).filter(Protocol.name==name).count() != 0
+    return self.query(Protocol).filter(Protocol.name==name).count() != 0
 
   def protocol(self, name):
     """Returns the protocol object in the database given a certain name. Raises
     an error if that does not exist."""
 
-    self.assert_validity()
-    return self.session.query(Protocol).filter(Protocol.name==name).one()
+    return self.query(Protocol).filter(Protocol.name==name).one()
 
   def protocol_purposes(self):
     """Returns all registered protocol purposes"""
 
-    self.assert_validity()
-    return list(self.session.query(ProtocolPurpose))
+    return list(self.query(ProtocolPurpose))
 
   def purposes(self):
     """Returns the list of allowed purposes"""
@@ -557,9 +513,7 @@ class Database(object):
     file ids.
     """
 
-    self.assert_validity()
-
-    fobj = self.session.query(File).filter(File.id.in_(ids))
+    fobj = self.query(File).filter(File.id.in_(ids))
     retval = []
     for p in ids:
       retval.extend([k.make_path(prefix, suffix) for k in fobj if k.id == p])
@@ -577,9 +531,7 @@ class Database(object):
     Returns a list (that may be empty).
     """
 
-    self.assert_validity()
-
-    fobj = self.session.query(File).filter(File.path.in_(paths))
+    fobj = self.query(File).filter(File.path.in_(paths))
     for p in paths:
       retval.extend([k.id for k in fobj if k.path == p])
     return retval
