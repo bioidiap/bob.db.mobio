@@ -55,6 +55,7 @@ class MobioDatabaseTest(unittest.TestCase):
     # Check T-Norm models
     self.assertEqual(len(db.tmodels()), 192)
 
+
   def test02_protocols(self):
 
     db = Database()
@@ -66,6 +67,7 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertEqual(len(db.subworlds()), 3)
     self.assertEqual(len(db.subworld_names()), 3)
     self.assertTrue(db.has_subworld('onethird'))
+
 
   def test03_files(self):
 
@@ -121,27 +123,20 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertEqual(len(db.objects(protocol='male', groups='eval', purposes='probe', classes='client', model_ids=1)), 105)
     self.assertEqual(len(db.objects(protocol='male', groups='eval', purposes='probe', classes='impostor', model_ids=1)), 3885)
 
-
     # T-Norm and Z-Norm files
     self.assertEqual(len(db.tobjects()), 960)
     self.assertEqual(len(db.tobjects(model_ids=('204_01',))), 5)
     self.assertEqual(len(db.zobjects()), 3072)
     self.assertEqual(len(db.zobjects(model_ids=(204,))), 192)
 
-  def test04_manage_dumplist_1(self):
+
+  def test04_driver_api(self):
 
     from bob.db.script.dbmanage import main
-
     self.assertEqual(main('mobio dumplist --self-test'.split()), 0)
-
-  def test05_manage_dumplist_2(self):
-
-    from bob.db.script.dbmanage import main
-
-    self.assertEqual(main('mobio dumplist --protocol=male --classes=client --groups=dev --purposes=enrol --self-test'.split()), 0)
-
-  def test06_manage_checkfiles(self):
-
-    from bob.db.script.dbmanage import main
-
+    self.assertEqual(main('mobio dumplist --protocol=male --class=client --group=dev --purpose=enrol --client=115 --self-test'.split()), 0)
     self.assertEqual(main('mobio checkfiles --self-test'.split()), 0)
+    self.assertEqual(main('mobio reverse m313/m313_01_p01_i0_0 --self-test'.split()), 0)
+    self.assertEqual(main('mobio path 21132 --self-test'.split()), 0)
+
+

@@ -18,10 +18,10 @@ def dumplist(args):
 
   r = db.objects(
       protocol=args.protocol,
-      purposes=args.purposes,
+      purposes=args.purpose,
       model_ids=args.client,
-      groups=args.groups,
-      classes=args.classes
+      groups=args.group,
+      classes=args.sclass
   )
 
   output = sys.stdout
@@ -137,33 +137,33 @@ class Interface(BaseInterface):
 
     # the "dumplist" action
     parser = subparsers.add_parser('dumplist', help=dumplist.__doc__)
-    parser.add_argument('-d', '--directory', dest="directory", default='', help="if given, this path will be prepended to every entry returned.")
-    parser.add_argument('-e', '--extension', dest="extension", default='', help="if given, this extension will be appended to every entry returned.")
-    parser.add_argument('-p', '--protocol', dest="protocol", default='', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=db.protocol_names() if db.is_valid() else ())
-    parser.add_argument('-u', '--purposes', dest="purposes", default='', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.purposes() if db.is_valid() else ())
-    parser.add_argument('-C', '--client', dest="client", default=None, type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid else ())
-    parser.add_argument('-g', '--groups', dest="groups", default='', help="if given, this value will limit the output files to those belonging to a particular protocolar group.", choices=db.groups() if db.is_valid() else ())
-    parser.add_argument('-c', '--classes', dest="classes", default='', help="if given, this value will limit the output files to those belonging to the given classes.", choices=('client', 'impostor', ''))
+    parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
+    parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
+    parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=db.protocol_names() if db.is_valid() else ())
+    parser.add_argument('-u', '--purpose', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.purposes() if db.is_valid() else ())
+    parser.add_argument('-C', '--client', type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid else ())
+    parser.add_argument('-g', '--group', help="if given, this value will limit the output files to those belonging to a particular protocolar group.", choices=db.groups() if db.is_valid() else ())
+    parser.add_argument('-c', '--class', dest="sclass", help="if given, this value will limit the output files to those belonging to the given classes.", choices=('client', 'impostor'))
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
     parser.set_defaults(func=dumplist) #action
 
     # the "checkfiles" action
     parser = subparsers.add_parser('checkfiles', help=checkfiles.__doc__)
-    parser.add_argument('-d', '--directory', dest="directory", default='', help="if given, this path will be prepended to every entry returned.")
-    parser.add_argument('-e', '--extension', dest="extension", default='', help="if given, this extension will be appended to every entry returned.")
+    parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
+    parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
     parser.set_defaults(func=checkfiles) #action
 
     # adds the "reverse" command
     parser = subparsers.add_parser('reverse', help=reverse.__doc__)
-    parser.add_argument('path', nargs='+', type=str, help="one or more path stems to look up. If you provide more than one, files which cannot be reversed will be omitted from the output.")
+    parser.add_argument('path', nargs='+', help="one or more path stems to look up. If you provide more than one, files which cannot be reversed will be omitted from the output.")
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
     parser.set_defaults(func=reverse) #action
 
     # adds the "path" command
     parser = subparsers.add_parser('path', help=path.__doc__)
-    parser.add_argument('-d', '--directory', dest="directory", default='', help="if given, this path will be prepended to every entry returned.")
-    parser.add_argument('-e', '--extension', dest="extension", default='', help="if given, this extension will be appended to every entry returned.")
+    parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
+    parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('id', nargs='+', type=int, help="one or more file ids to look up. If you provide more than one, files which cannot be found will be omitted from the output. If you provide a single id to lookup, an error message will be printed if the id does not exist in the database. The exit status will be non-zero in such case.")
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
     parser.set_defaults(func=path) #action

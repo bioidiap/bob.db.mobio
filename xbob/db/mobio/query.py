@@ -492,7 +492,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     return ProtocolPurpose.purpose_choices
 
-  def paths(self, ids, prefix='', suffix=''):
+  def paths(self, ids, prefix=None, suffix=None):
     """Returns a full file paths considering particular file ids, a given
     directory and an extension
 
@@ -532,6 +532,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     """
 
     fobj = self.query(File).filter(File.path.in_(paths))
+    retval = []
     for p in paths:
       retval.extend([k.id for k in fobj if k.path == p])
     return retval
