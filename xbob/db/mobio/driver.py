@@ -141,7 +141,7 @@ class Interface(BaseInterface):
     parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=db.protocol_names() if db.is_valid() else ())
     parser.add_argument('-u', '--purpose', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.purposes() if db.is_valid() else ())
-    parser.add_argument('-C', '--client', type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid else ())
+    parser.add_argument('-C', '--client', type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid() else ())
     parser.add_argument('-g', '--group', help="if given, this value will limit the output files to those belonging to a particular protocolar group.", choices=db.groups() if db.is_valid() else ())
     parser.add_argument('-c', '--class', dest="sclass", help="if given, this value will limit the output files to those belonging to the given classes.", choices=('client', 'impostor'))
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
