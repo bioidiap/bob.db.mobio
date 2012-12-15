@@ -91,7 +91,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     if groups:
       q = q.filter(Client.sgroup.in_(groups))
     if subworld:
-      q = q.join(Subworld, Client.subworld).filter(Subworld.name.in_(subworld))
+      q = q.join((Subworld, Client.subworld)).filter(Subworld.name.in_(subworld))
     if gender:
       q = q.filter(Client.gender.in_(gender))
     q = q.order_by(Client.id)
@@ -237,7 +237,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     # List of the clients
     q = self.query(TModel).join(Client)
     if subworld:
-      q = q.join(Subworld, Client.subworld).filter(Subworld.name.in_(subworld))
+      q = q.join((Subworld, Client.subworld)).filter(Subworld.name.in_(subworld))
     if gender:
       q = q.filter(Client.gender.in_(gender))
     q = q.order_by(TModel.id)
@@ -338,7 +338,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     if 'world' in groups:
       q = self.query(File).join(Client).filter(Client.sgroup == 'world')
       if subworld:
-        q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
+        q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
       if gender:
         q = q.filter(Client.gender.in_(gender))
       if model_ids:
@@ -348,7 +348,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     if ('dev' in groups or 'eval' in groups):
       if('enrol' in purposes):
-        q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+        q = self.query(File).join(Client).join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
               filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enrol'))
         if gender:
           q = q.filter(Client.gender.in_(gender))
@@ -359,7 +359,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
       if('probe' in purposes):
         if('client' in classes):
-          q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+          q = self.query(File).join(Client).join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
@@ -369,7 +369,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
           retval += list(q)
 
         if('impostor' in classes):
-          q = self.query(File).join(Client).join(ProtocolPurpose, File.protocol_purposes).join(Protocol).\
+          q = self.query(File).join(Client).join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
@@ -421,8 +421,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     retval = []
     q = self.query(File)
     if subworld:
-      q = q.join(Subworld, File.subworld).filter(Subworld.name.in_(subworld))
-    q = q.join(TModel, File.tmodels)
+      q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
+    q = q.join((TModel, File.tmodels))
     if model_ids:
       q = q.filter(TModel.id.in_(model_ids))
     if gender:
