@@ -69,7 +69,7 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertTrue(db.has_subworld('onethird'))
 
 
-  def test03_files(self):
+  def test03_objects(self):
 
     db = Database()
 

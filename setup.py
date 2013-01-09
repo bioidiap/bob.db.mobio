@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.mobio',
-    version='1.0.1',
+    version='1.0.2',
     description='MOBIO Database Access API for Bob',
     url='http://github.com/bioidiap/xbob.db.mobio',
     license='GPLv3',
@@ -25,7 +25,7 @@ setup(
     install_requires=[
       'setuptools',
       'bob',  # base signal proc./machine learning library
-      'xbob.db.verification.utils' # defines a set of utilities for face verification databases like this one.
+      'xbob.db.verification.utils>=0.1.4' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
