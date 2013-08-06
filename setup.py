@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.mobio',
-    version='1.0.4',
+    version='1.0.5a0',
     description='MOBIO Database Access API for Bob',
     url='http://github.com/bioidiap/xbob.db.mobio',
     license='GPLv3',
