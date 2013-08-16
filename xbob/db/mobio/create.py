@@ -46,7 +46,7 @@ def add_files(session, imagedir, verbose):
         group = 'dev'
       elif (institute == 'idiap' or institute == 'brno'):
         group = 'eval'
-      if verbose>1: print "  Adding client %d..." % int(client_id)
+      if verbose>1: print("  Adding client %d..." % int(client_id))
       session.add(Client(int(client_id), group, gender, institute))
       client_dict[client_id] = True
 
@@ -61,11 +61,11 @@ def add_files(session, imagedir, verbose):
       device = 'laptop'
     channel = int(v[4][0])
 
-    if verbose>1: print "    Adding file '%s'..." % bname
+    if verbose>1: print("    Adding file '%s'..." % bname)
     session.add(File(int(client_id), bname, session_id, speech_type, shot_id, environment, device, channel))
 
   client_dict = {}
-  if verbose: print "Adding clients and files ..."
+  if verbose: print("Adding clients and files ...")
   for client_id in filter(nodot, os.listdir(imagedir)):
     for filename in filter(nodot, os.listdir(os.path.join(imagedir, client_id))):
       if filename.endswith('.jpg'):
@@ -330,7 +330,7 @@ def add_subworlds(session, verbose):
                     522, 524, 526, 527]
   slists = [onethird_list, twothirds_list, twothirds_list]
   for k in range(len(snames)):
-    if verbose: print "Adding subworld '%s'..." %(snames[k], )
+    if verbose: print("Adding subworld '%s'..." %(snames[k], ))
     su = Subworld(snames[k])
     session.add(su)
     session.flush()
@@ -339,23 +339,23 @@ def add_subworlds(session, verbose):
     if k != 2: # Not twothirds-subsampled
       # Add clients
       for c_id in l:
-        if verbose>1: print "  Adding client '%d' to subworld '%s'..." %(c_id, snames[k])
+        if verbose>1: print("  Adding client '%d' to subworld '%s'..." %(c_id, snames[k]))
         su.clients.append(session.query(Client).filter(Client.id == c_id).first())
         # Add all files from this client
         q = session.query(File).join(Client).filter(Client.id == c_id)
         for c_file in q:
-          if verbose>1: print "    Adding file '%s' to subworld '%s'..." %(c_file.path, snames[k])
+          if verbose>1: print("    Adding file '%s' to subworld '%s'..." %(c_file.path, snames[k]))
           su.files.append(c_file)
     else: # twothirds-subsampled: Files were randomly selected from twothirds
       # Add clients
       for c_id in l:
-        if verbose>1: print "  Adding client '%d' to subworld '%s'..." %(c_id, snames[k])
+        if verbose>1: print("  Adding client '%d' to subworld '%s'..." %(c_id, snames[k]))
         su.clients.append(session.query(Client).filter(Client.id == c_id).first())
       # Add subsampled files only
       for path in twothirds_subsampled_filelist:
         q = session.query(File).filter(File.path == path)
         for c_file in q:
-          if verbose>1: print "  Adding file '%s' to subworld '%s'..." %(c_file.path, snames[k])
+          if verbose>1: print("  Adding file '%s' to subworld '%s'..." %(c_file.path, snames[k]))
           su.files.append(c_file)
 
 def add_protocols(session, verbose):
@@ -391,7 +391,7 @@ def add_protocols(session, verbose):
   for proto in protocol_definitions:
     p = Protocol(proto)
     # Add protocol
-    if verbose: print "Adding protocol '%s'..." % (proto)
+    if verbose: print("Adding protocol '%s'..." % (proto))
     session.add(p)
     session.flush()
     session.refresh(p)
@@ -400,7 +400,7 @@ def add_protocols(session, verbose):
     for key in range(len(protocolPurpose_list)):
       purpose = protocolPurpose_list[key]
       pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
-      if verbose>1: print "  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1])
+      if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
       session.add(pu)
       session.flush()
       session.refresh(pu)
@@ -428,7 +428,7 @@ def add_protocols(session, verbose):
       if world_list:
         q = session.query(File).join(Client).filter(Client.sgroup == 'world').order_by(File.id)
         for k in q:
-          if verbose>1: print "    Adding protocol file '%s'..." % (k.path)
+          if verbose>1: print("    Adding protocol file '%s'..." % (k.path))
           pu.files.append(k)
       # Dev/eval set
       else:
@@ -443,7 +443,7 @@ def add_protocols(session, verbose):
             q = q.filter(File.speech_type.in_(speech_list))
           q = q.order_by(File.id)
           for k in q:
-            if verbose>1: print "    Adding protocol file '%s'..." % (k.path)
+            if verbose>1: print("    Adding protocol file '%s'..." % (k.path))
             pu.files.append(k)
 
 def add_tmodels(session, verbose):
@@ -502,14 +502,14 @@ def add_tmodels(session, verbose):
                   (526, ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']),
                   (527, ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'])]
 
-  if verbose: print "Adding T-Norm models..."
+  if verbose: print("Adding T-Norm models...")
   for model_list in tmodels_list:
     cid = model_list[0]
     slist = model_list[1]
     for sid in slist:
       tmodel_name = str(cid) + '_' + sid
       tmodel = TModel(tmodel_name, cid)
-      if verbose>1: print "  Adding T-norm model ('%s')..." % tmodel_name
+      if verbose>1: print("  Adding T-norm model ('%s')..." % tmodel_name)
       session.add(tmodel)
       session.flush()
       session.refresh(tmodel)
@@ -517,7 +517,7 @@ def add_tmodels(session, verbose):
             filter(and_(Client.id == cid, File.session_id == int(sid), File.speech_type == 'p')).\
             order_by(File.id)
       for k in q:
-        if verbose>1: print "    Adding T-norm file '%s' to model '%s'..." % (k.path, tmodel_name)
+        if verbose>1: print("    Adding T-norm file '%s' to model '%s'..." % (k.path, tmodel_name))
         tmodel.files.append(k)
 
 def create_tables(args):
