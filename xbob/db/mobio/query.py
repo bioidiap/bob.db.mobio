@@ -7,6 +7,7 @@ MOBIO database in the most obvious ways.
 """
 
 import os
+import six
 from bob.db import utils
 from .models import *
 from .driver import Interface
@@ -414,7 +415,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     if(model_ids is None):
       model_ids = ()
-    elif isinstance(model_ids, (str,unicode)):
+    elif isinstance(model_ids, six.string_types):
       model_ids = (model_ids,)
 
     # Now query the database
