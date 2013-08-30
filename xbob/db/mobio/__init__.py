@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""The Mobio database
-"""
+"""The MOBIO database"""
 
 from .query import Database
 from .models import Client, Subworld, TModel, File, Protocol, ProtocolPurpose

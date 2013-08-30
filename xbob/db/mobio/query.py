@@ -94,8 +94,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -165,8 +165,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -192,8 +192,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -219,8 +219,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -246,8 +246,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -273,8 +273,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -312,8 +312,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
@@ -351,8 +351,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     purposes
@@ -456,8 +456,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     model_ids
@@ -520,8 +520,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
-          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', \
+        'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     model_ids
