@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 # Laurent El Shafey <Laurent.El-Shafey@idiap.ch>
+#
+# Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """This module provides the Dataset interface allowing the user to query the
 MOBIO database in the most obvious ways.
@@ -57,13 +71,32 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     self.assert_validity()
     return self.query(Subworld).filter(Subworld.name==name).count() != 0
 
+  def _replace_protocol_alias(self, protocol):
+    if protocol == 'male': return 'mobile0-male'
+    elif protocol == 'female': return 'mobile0-female'
+    else: return protocol
+
+  def _replace_protocols_alias(self, protocol):
+    #print(protocol)
+    if protocol: 
+      from six import string_types
+      if isinstance(protocol, string_types): 
+        #print([self._replace_protocol_alias(protocol)])
+        return [self._replace_protocol_alias(protocol)]
+      else:
+        #print(list(set(self._replace_protocol_alias(k) for k in protocols)))
+        return list(set(self._replace_protocol_alias(k) for k in protocols))
+    else: return None
+
   def clients(self, protocol=None, groups=None, subworld=None, gender=None):
     """Returns a list of Clients for the specific query by the user.
 
     Keyword Parameters:
 
     protocol
-      The protocol to consider ('male', 'female')
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       The groups to which the clients belong ('dev', 'eval', 'world')
@@ -80,23 +113,40 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Returns: A list containing all the clients which have the given properties.
     """
 
+    protocol = self._replace_protocols_alias(protocol)
     protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names(), [])
-    groups = self.check_parameters_for_validity(groups, "group", self.groups(), [])
+    groups = self.check_parameters_for_validity(groups, "group", self.groups(), self.groups())
     subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
     gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     # List of the clients
-    q = self.query(Client)
-    if protocol:
-      q = q.filter(Client.gender.in_(protocol))
-    if groups:
-      q = q.filter(Client.sgroup.in_(groups))
-    if subworld:
-      q = q.join((Subworld, Client.subworld)).filter(Subworld.name.in_(subworld))
-    if gender:
-      q = q.filter(Client.gender.in_(gender))
-    q = q.order_by(Client.id)
-    return list(q)
+    retval = []
+    if 'world' in groups:
+      q = self.query(Client).filter(Client.sgroup == 'world')
+      if subworld:
+        q = q.join((Subworld, Client.subworld)).filter(Subworld.name.in_(subworld))
+      if gender:
+        q = q.filter(Client.gender.in_(gender))
+      q = q.order_by(Client.id)
+      retval += list(q)
+
+    dev_eval = []
+    if 'dev' in groups: dev_eval.append('dev')
+    if 'eval' in groups: dev_eval.append('eval')
+    if dev_eval:
+      protocol_gender = None
+      if protocol:
+        q = self.query(Protocol).filter(Protocol.name.in_(protocol)).one()
+        protocol_gender = [q.gender]
+      q = self.query(Client).filter(Client.sgroup.in_(dev_eval))
+      if protocol_gender:
+        q = q.filter(Client.gender.in_(protocol_gender))
+      if gender:
+        q = q.filter(Client.gender.in_(gender))
+      q = q.order_by(Client.id)
+      retval += list(q)
+
+    return retval
 
   def has_client_id(self, id):
     """Returns True if we have a client with a certain integer identifier"""
@@ -115,11 +165,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('male', 'female').
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       Ignored.
-      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      For the MOBIO database, this has no impact as the T-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
@@ -140,7 +192,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('male', 'female').
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       Ignored.
@@ -165,7 +219,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the Mobio protocols ('male', 'female').
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
@@ -190,7 +246,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the Mobio protocols ('male', 'female').
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
@@ -215,11 +273,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      Ignored.
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       Ignored.
-      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      For the MOBIO database, this has no impact as the T-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
@@ -232,11 +292,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Returns: A list containing all the T-norm models belonging to the given group.
     """
 
+    protocol = self._replace_protocols_alias(protocol)
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
     subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
     gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
 
     # List of the clients
-    q = self.query(TModel).join(Client)
+    q = self.query(TModel).join(Client).join(Protocol).filter(Protocol.name.in_(protocol))
     if subworld:
       q = q.join((Subworld, Client.subworld)).filter(Subworld.name.in_(subworld))
     if gender:
@@ -250,11 +312,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      Ignored.
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     groups
       Ignored.
-      For the MOBIO database, this has no impact as the Z-Norm clients are coming from
+      For the MOBIO database, this has no impact as the T-Norm clients are coming from
       the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
 
     subworld
@@ -266,7 +330,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     Returns: A list containing the ids of all T-norm models belonging to the given group.
     """
-    return [tmodel.id for tmodel in self.tmodels(protocol, groups, subworld, gender)]
+    return [tmodel.mid for tmodel in self.tmodels(protocol, groups, subworld, gender)]
 
   def get_client_id_from_model_id(self, model_id):
     """Returns the client_id attached to the given model_id
@@ -287,7 +351,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Keyword Parameters:
 
     protocol
-      One of the MOBIO protocols ('male', 'female').
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     purposes
       The purposes required to be retrieved ('enrol', 'probe') or a tuple
@@ -321,6 +387,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     Returns: A set of Files with the given properties.
     """
 
+    protocol = self._replace_protocols_alias(protocol)
     protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
     purposes = self.check_parameters_for_validity(purposes, "purpose", self.purposes())
     groups = self.check_parameters_for_validity(groups, "group", self.groups())
@@ -336,8 +403,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     # Now query the database
     retval = []
-    if 'world' in groups:
-      q = self.query(File).join(Client).filter(Client.sgroup == 'world')
+    if 'world' in groups and 'train' in purposes:
+      q = self.query(File).join(Client).filter(Client.sgroup == 'world').join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
+            filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup == 'world'))
       if subworld:
         q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
       if gender:
@@ -381,18 +449,84 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     return list(set(retval)) # To remove duplicates
 
-  def tobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None):
+  def tobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None, speech_type=None, device=None):
     """Returns a set of filenames for enroling T-norm models for score
        normalization.
 
     Keyword Parameters:
 
     protocol
-      Ignored.
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     model_ids
       Only retrieves the files for the provided list of model ids.
       If 'None' is given (this is the default), no filter over
+      the model_ids is performed.
+
+    groups
+      Ignored.
+      For the MOBIO database, this has no impact as the T-Norm clients are coming from
+      the 'world' set, and are hence the same for both the 'dev' and 'eval' sets.
+
+    subworld
+      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
+      Please note that 'onethird' is the default value.
+
+    gender
+      The gender to consider ('male', 'female')
+
+    speech_type
+      The speech type to consider ('p', 'l', 'r', 'f')
+
+    device
+      The device choice to consider ('mobile', 'laptop')
+ 
+    Returns: A set of Files with the given properties.
+    """
+
+    protocol = self._replace_protocols_alias(protocol)
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
+    subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
+    gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
+
+    import collections
+    if(model_ids is None):
+      model_ids = ()
+    elif isinstance(model_ids, six.string_types):
+      model_ids = (model_ids,)
+
+    # Now query the database
+    q = self.query(File,Protocol).filter(Protocol.name.in_(protocol)).join(Client)
+    if subworld:
+      q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
+    q = q.join((TModel, File.tmodels)).filter(TModel.protocol_id == Protocol.id)
+    if model_ids:
+      q = q.filter(TModel.mid.in_(model_ids))
+    if gender:
+      q = q.filter(Client.gender.in_(gender))
+    if speech_type:
+      q = q.filter(File.speech_type.in_(speech_type))
+    if device:
+      q = q.filter(File.device.in_(device))
+    q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
+    retval = [v[0] for v in q]
+    return list(retval) 
+
+  def zobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None, speech_type=['r','f'], device=['mobile']):
+    """Returns a set of Files to perform Z-norm score normalization.
+
+    Keyword Parameters:
+
+    protocol
+      One of the MOBIO protocols ('mobile0-male', 'mobile0-female', 'mobile1-male', 'mobile1-female', 
+          'laptop1-male', 'laptop1-female', 'laptop_mobile1-male', 'laptop_mobile1-female')
+      'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
+
+    model_ids
+      Only retrieves the files for the provided list of model ids (claimed
+      client id).  If 'None' is given (this is the default), no filter over
       the model_ids is performed.
 
     groups
@@ -407,58 +541,44 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     gender
       The gender to consider ('male', 'female')
 
+    speech_type
+      The speech type to consider ('p', 'l', 'r', 'f')
+
+    device
+      The device choice to consider ('mobile', 'laptop')
+ 
     Returns: A set of Files with the given properties.
     """
 
+    protocol = self._replace_protocols_alias(protocol)
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
+    groups = self.check_parameters_for_validity(groups, "group", self.groups())
     subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
     gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
+    speech_type = self.check_parameters_for_validity(speech_type, "speech_type", File.speech_type_choices)
+    device = self.check_parameters_for_validity(device, "device", File.device_choices)
 
+    import collections
     if(model_ids is None):
       model_ids = ()
-    elif isinstance(model_ids, six.string_types):
+    elif not isinstance(model_ids, collections.Iterable):
       model_ids = (model_ids,)
 
     # Now query the database
-    retval = []
-    q = self.query(File)
+    q = self.query(File).join(Client).filter(Client.sgroup == 'world').join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
+          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup == 'world'))
     if subworld:
       q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
-    q = q.join((TModel, File.tmodels))
-    if model_ids:
-      q = q.filter(TModel.id.in_(model_ids))
     if gender:
-      q = q.join(Client).filter(Client.gender.in_(gender))
+      q = q.filter(Client.gender.in_(gender))
+    if speech_type:
+      q = q.filter(File.speech_type.in_(speech_type))
+    if device:
+      q = q.filter(File.device.in_(device))
+    if model_ids:
+      q = q.filter(File.client_id.in_(model_ids))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
-    retval += list(q)
-    return retval
-
-  def zobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None):
-    """Returns a set of Files to perform Z-norm score normalization.
-
-    Keyword Parameters:
-
-    protocol
-      One of the MOBIO protocols ('male', 'female').
-
-    model_ids
-      Only retrieves the files for the provided list of model ids (claimed
-      client id).  If 'None' is given (this is the default), no filter over
-      the model_ids is performed.
-
-    groups
-      Ignored.
-
-    subworld
-      Specify a split of the world data ('onethird', 'twothirds', 'twothirds-subsampled')
-      Please note that 'onethird' is the default value.
-
-    gender
-      The gender to consider ('male', 'female')
-
-    Returns: A set of Files with the given properties.
-    """
-
-    return self.objects(protocol, None, model_ids, 'world', None, subworld, gender)
+    return list(q)
 
   def protocol_names(self):
     """Returns all registered protocol names"""
@@ -475,13 +595,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
   def has_protocol(self, name):
     """Tells if a certain protocol is available"""
 
-    return self.query(Protocol).filter(Protocol.name==name).count() != 0
+    return self.query(Protocol).filter(Protocol.name==self._replace_protocol_alias(name)).count() != 0
 
   def protocol(self, name):
     """Returns the protocol object in the database given a certain name. Raises
     an error if that does not exist."""
 
-    return self.query(Protocol).filter(Protocol.name==name).one()
+    return self.query(Protocol).filter(Protocol.name==self._replace_protocol_alias(name)).one()
 
   def protocol_purposes(self):
     """Returns all registered protocol purposes"""

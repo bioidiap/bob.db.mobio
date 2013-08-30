@@ -24,7 +24,7 @@ There are a few ways to achieve this:
 
 The package is available in two different distribution formats:
 
-1. You can download it from `PyPI <http://pypi.python.org/pypi>`_, or
+1. You can download it from `PyPI <http://pypi.python.org/pypi/xbob.db.mobio>`_, or
 
 2. You can download it in its source form from `its git repository
    <https://github.com/bioidiap/xbob.db.mobio>`_. When you download the
@@ -72,3 +72,38 @@ lines::
   [sources]
   xbob.db.mobio = git https://github.com/bioidiap/xbob.db.mobio.git
   ...
+
+MOBIO protocols
+===============
+
+There were initially two protocols defined on the Phase 2 of the database,
+which were called 'female' and 'male'. Later on, the number of protocols
+has increased, considering the additional data recorded using laptops, which
+has led to 8 protocols.
+
+The two initial protocols 'female' and 'male' now correspond to the protocols
+called 'mobile0-female' and 'mobile0-male', respectively. The training, 
+development and evaluation sets are indeed identical.
+
+However, if you want to use the same ZT score normalization files as in this 
+publication::
+
+  @article{McCool_IET_BMT_2013,
+    title = {Session variability modelling for face authentication},
+    author = {McCool, Chris and Wallace, Roy and McLaren, Mitchell and El Shafey, Laurent and Marcel, S{\'{e}}bastien},
+    month = sep,
+    journal = {IET Biometrics},
+    volume = {2},
+    number = {3},
+    year = {2013},
+    pages = {117-129},
+    issn = {2047-4938},
+    doi = {10.1049/iet-bmt.2012.0059},
+  }
+
+You have to specify optional arguments::
+
+  1. `speech_type = 'p'` when calling the `tobjects()` method
+
+  2. `speech_type = ['p','r','l','f']` when calling the `zobjects()` method
+

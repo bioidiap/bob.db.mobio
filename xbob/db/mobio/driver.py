@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 # Laurent El Shafey <laurent.el-shafey@idiap.ch>
+#
+# Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """Commands the MOBIO database can respond to.
 """
@@ -139,7 +153,7 @@ class Interface(BaseInterface):
     parser = subparsers.add_parser('dumplist', help=dumplist.__doc__)
     parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
     parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
-    parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=db.protocol_names() if db.is_valid() else ())
+    parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=list(db.protocol_names()).extend(['male', 'female']) if db.is_valid() else ())
     parser.add_argument('-u', '--purpose', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.purposes() if db.is_valid() else ())
     parser.add_argument('-C', '--client', type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid() else ())
     parser.add_argument('-g', '--group', help="if given, this value will limit the output files to those belonging to a particular protocolar group.", choices=db.groups() if db.is_valid() else ())

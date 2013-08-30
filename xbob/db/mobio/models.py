@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 # Laurent El Shafey <laurent.el-shafey@idiap.ch>
+#
+# Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """Table models and functionality for the Mobio database.
 """
@@ -84,20 +98,27 @@ class TModel(Base):
 
   __tablename__ = 'tmodel'
 
-  id = Column(String(9), primary_key=True) # Overhead in size is negligible
+  # Unique identifier for this TModel object
+  id = Column(Integer, primary_key=True)
+  # Model id (only unique for a given protocol)
+  mid = Column(String(9))
   client_id = Column(Integer, ForeignKey('client.id')) # for SQL
+  protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
 
   # for Python: A direct link to the client
   client = relationship("Client", backref=backref("tmodels", order_by=id))
+  # for Python: A direct link to the protocol
+  protocol = relationship("Protocol", backref=backref("tmodels", order_by=id))
   # for Python: A direct link to the files
   files = relationship("File", secondary=tmodel_file_association, backref=backref("tmodels", order_by=id))
 
-  def __init__(self, mid, client_id):
-    self.id = mid
+  def __init__(self, mid, client_id, protocol_id):
+    self.mid = mid
     self.client_id = client_id
+    self.protocol_id = protocol_id
 
   def __repr__(self):
-    return "TModel('%s')" % self.id
+    return "TModel('%s', '%s')" % (self.mid, self.protocol_id)
 
 class File(Base, xbob.db.verification.utils.File):
   """Generic file container"""
@@ -150,12 +171,15 @@ class Protocol(Base):
   id = Column(Integer, primary_key=True)
   # Name of the protocol associated with this object
   name = Column(String(20), unique=True)
+  gender_choices = ('female','male')
+  gender = Column(Enum(*gender_choices))
 
-  def __init__(self, name):
+  def __init__(self, name, gender):
     self.name = name
+    self.gender = gender
 
   def __repr__(self):
-    return "Protocol('%s')" % (self.name,)
+    return "Protocol('%s','%s')" % (self.name, self.gender)
 
 class ProtocolPurpose(Base):
   """MOBIO protocol purposes"""

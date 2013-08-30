@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 # Laurent El Shafey <laurent.el-shafey@idiap.ch>
+#
+# Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
 
@@ -9,9 +23,9 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.mobio',
-    version='1.0.5a0',
+    version='1.1.0',
     description='MOBIO Database Access API for Bob',
-    url='http://github.com/bioidiap/xbob.db.mobio',
+    url='https://pypi.python.org/pypi/xbob.db.mobio',
     license='GPLv3',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
@@ -24,7 +38,7 @@ setup(
 
     install_requires=[
       'setuptools',
-      'six',  # py2/3 compatibility library
+      'six',  # py2/3 compatibility library 
       'bob',  # base signal proc./machine learning library
       'xbob.db.verification.utils>=0.1.4' # defines a set of utilities for face verification databases like this one.
     ],
@@ -43,6 +57,10 @@ setup(
       # bob unittest declaration
       'bob.test': [
         'mobio = xbob.db.mobio.test:MobioDatabaseTest',
+        ],
+      # scripts 
+      'console_scripts': [
+        'generate_filelist = xbob.db.mobio.generate_filelist:main',
         ],
       },
 
