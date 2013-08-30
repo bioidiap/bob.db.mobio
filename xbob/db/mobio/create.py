@@ -809,6 +809,6 @@ def add_command(subparsers):
 
   parser.add_argument('-R', '--recreate', action='store_true', help="If set, I'll first erase the current database")
   parser.add_argument('-v', '--verbose', action='count', help="Do SQL operations in a verbose way?")
-  parser.add_argument('-D', '--datadir', metavar='DIR', default='/idiap/temp/ekhoury/MOBIO_DATABASE/VIDEOS/', help="Change the relative path to the directory containing the data of the MOBIO database.")
-  parser.add_argument('-E', '--extensions', type=str, nargs='+', default=['.mp4'], help="Change the extension of the MOBIO files used to create the database.")
+  parser.add_argument('-D', '--datadir', metavar='DIR', default='/idiap/resource/database/mobio/IMAGES_PNG/', help="Change the relative path to the directory containing the data of the MOBIO database.")
+  parser.add_argument('-E', '--extensions', type=str, nargs='+', default=['.png'], help="Change the extension of the MOBIO files used to create the database.")
   parser.set_defaults(func=create) #action
