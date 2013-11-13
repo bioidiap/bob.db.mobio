@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.mobio',
-    version='1.1.2a0',
+    version='1.2.1a0',
     description='MOBIO Database Access API for Bob',
     url='https://pypi.python.org/pypi/xbob.db.mobio',
     license='GPLv3',
@@ -39,9 +39,9 @@ setup(
 
     install_requires=[
       'setuptools',
-      'six',  # py2/3 compatibility library 
+      'six',  # py2/3 compatibility library
       'bob',  # base signal proc./machine learning library
-      'xbob.db.verification.utils>=0.1.4' # defines a set of utilities for face verification databases like this one.
+      'xbob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
@@ -59,7 +59,7 @@ setup(
       'bob.test': [
         'mobio = xbob.db.mobio.test:MobioDatabaseTest',
         ],
-      # scripts 
+      # scripts
       'console_scripts': [
         'generate_filelist = xbob.db.mobio.generate_filelist:main',
         ],

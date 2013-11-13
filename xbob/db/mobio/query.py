@@ -37,10 +37,13 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
   and for the data itself inside the database.
   """
 
-  def __init__(self):
+  def __init__(self, original_directory = None, original_extension = None, annotation_directory = None, annotation_extension = '.pos'):
     # call base class constructors to open a session to the database
     xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
-    xbob.db.verification.utils.ZTDatabase.__init__(self)
+    xbob.db.verification.utils.ZTDatabase.__init__(self, original_directory=original_directory, original_extension=original_extension)
+
+    self.annotation_directory = annotation_directory
+    self.annotation_extension = annotation_extension
 
   def groups(self):
     """Returns the names of all registered groups"""
@@ -78,9 +81,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
   def _replace_protocols_alias(self, protocol):
     #print(protocol)
-    if protocol: 
+    if protocol:
       from six import string_types
-      if isinstance(protocol, string_types): 
+      if isinstance(protocol, string_types):
         #print([self._replace_protocol_alias(protocol)])
         return [self._replace_protocol_alias(protocol)]
       else:
@@ -482,7 +485,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     device
       The device choice to consider ('mobile', 'laptop')
- 
+
     Returns: A set of Files with the given properties.
     """
 
@@ -512,7 +515,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
       q = q.filter(File.device.in_(device))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
     retval = [v[0] for v in q]
-    return list(retval) 
+    return list(retval)
 
   def zobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None, speech_type=['r','f'], device=['mobile']):
     """Returns a set of Files to perform Z-norm score normalization.
@@ -546,7 +549,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
     device
       The device choice to consider ('mobile', 'laptop')
- 
+
     Returns: A set of Files with the given properties.
     """
 
@@ -579,6 +582,31 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
       q = q.filter(File.client_id.in_(model_ids))
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
     return list(q)
+
+  def annotations(self, file_id):
+    """Reads the annotations for the given file id from file and returns them in a dictionary.
+
+    If you don't have a copy of the annotation files, you can download them under http://www.idiap.ch/resource/biometric.
+
+    Keyword parameters:
+
+    file_id
+      The ID of the file for which the annotations should be read.
+
+    Return value
+      The annotations as a dictionary: {'reye':(re_y,re_x), 'leye':(le_y,le_x)}
+    """
+    if self.annotation_directory is None:
+      return None
+
+    self.assert_validity()
+
+    query = self.query(File).filter(File.id==file_id)
+    assert query.count() == 1
+    annotation_file = query.first().make_path(self.annotation_directory, self.annotation_extension)
+
+    # return the annotations as read from file
+    return xbob.db.verification.utils.read_annotation_file(annotation_file, 'eyecenter')
 
   def protocol_names(self):
     """Returns all registered protocol names"""

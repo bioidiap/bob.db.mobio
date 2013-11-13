@@ -22,6 +22,7 @@
 import os, sys
 import unittest
 from .query import Database
+from nose.plugins.skip import SkipTest
 
 class MobioDatabaseTest(unittest.TestCase):
   """Performs various tests on the MOBIO database."""
@@ -107,7 +108,7 @@ class MobioDatabaseTest(unittest.TestCase):
   def test03_objects(self):
 
     db = Database()
-    
+
     # Protocol mobile0-female
     # World group
     self.assertEqual(len(db.objects(protocol='mobile0-female', groups='world')), 9600)
@@ -364,7 +365,7 @@ class MobioDatabaseTest(unittest.TestCase):
 
 
     # T-Norm and Z-Norm files
-    # T-Norm 
+    # T-Norm
     self.assertEqual(len(db.tobjects(protocol='mobile0-female')), 3072)
     self.assertEqual(len(db.tobjects(protocol='mobile0-male')), 3072)
     self.assertEqual(len(db.tobjects(protocol='mobile1-female')), 3408)
@@ -376,14 +377,32 @@ class MobioDatabaseTest(unittest.TestCase):
     self.assertEqual(len(db.tobjects(protocol='male', speech_type='p')), 960)
     self.assertEqual(len(db.tobjects(protocol='female', speech_type='p')), 960)
     self.assertEqual(len(db.tobjects(protocol='male',  speech_type='p', model_ids=('204_01_mobile',))), 5)
-    
+
     # Z-Norm files
     self.assertEqual(len(db.zobjects()), 1920)
     self.assertEqual(len(db.zobjects(model_ids=(204,))), 120)
     self.assertEqual(len(db.zobjects(protocol='male', speech_type=['p','r','l','f'])), 3072)
     self.assertEqual(len(db.zobjects(protocol='male', speech_type=['p','r','l','f'], model_ids=(204,))), 192)
 
-  def test04_driver_api(self):
+
+  def test04_annotations(self):
+    # read some annotation files and test it's content
+    dir = "/idiap/resource/database/mobio/IMAGE_ANNOTATIONS"
+    if not os.path.exists(dir):
+      raise SkipTest("The annotation directory '%d' is not available, annotations can't be tested.")
+    db = Database(annotation_directory = dir)
+    import random
+    files = random.sample(db.all_files(), 1000)
+    for file in files:
+      annotations = db.annotations(file.id)
+      self.assertTrue(annotations is not None)
+      self.assertTrue('leye' in annotations)
+      self.assertTrue('reye' in annotations)
+      self.assertEqual(len(annotations['leye']), 2)
+      self.assertEqual(len(annotations['reye']), 2)
+
+
+  def test05_driver_api(self):
 
     from bob.db.script.dbmanage import main
     self.assertEqual(main('mobio dumplist --self-test'.split()), 0)
