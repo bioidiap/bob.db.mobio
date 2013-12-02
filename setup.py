@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.mobio',
-    version='1.2.1',
+    version='1.2.2',
     description='MOBIO Database Access API for Bob',
     url='https://pypi.python.org/pypi/xbob.db.mobio',
     license='GPLv3',
