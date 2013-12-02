@@ -31,6 +31,7 @@ class MobioDatabaseTest(unittest.TestCase):
 
     db = Database()
 
+    self.assertEqual(len(db.groups()), 3)
     clients = db.clients()
     self.assertEqual(len(clients), 150)
     # Number of clients in each set
