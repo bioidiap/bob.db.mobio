@@ -22,15 +22,15 @@ MOBIO database in the most obvious ways.
 
 import os
 import six
-from bob.db import utils
+from bob.db.base import utils
 from .models import *
 from .driver import Interface
 
-import xbob.db.verification.utils
+import bob.db.verification.utils
 
 SQLITE_FILE = Interface().files()[0]
 
-class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.utils.ZTDatabase):
+class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.utils.ZTDatabase):
   """The dataset class opens and maintains a connection opened to the Database.
 
   It provides many different ways to probe for the characteristics of the data
@@ -39,8 +39,8 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
 
   def __init__(self, original_directory = None, original_extension = None, annotation_directory = None, annotation_extension = '.pos'):
     # call base class constructors to open a session to the database
-    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
-    xbob.db.verification.utils.ZTDatabase.__init__(self, original_directory=original_directory, original_extension=original_extension)
+    bob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
+    bob.db.verification.utils.ZTDatabase.__init__(self, original_directory=original_directory, original_extension=original_extension)
 
     self.annotation_directory = annotation_directory
     self.annotation_extension = annotation_extension
@@ -335,7 +335,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     """
     return [tmodel.mid for tmodel in self.tmodels(protocol, groups, subworld, gender)]
 
-  def get_client_id_from_model_id(self, model_id):
+  def get_client_id_from_model_id(self, model_id, **kwargs):
     """Returns the client_id attached to the given model_id
 
     Keyword Parameters:
@@ -606,7 +606,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase, xbob.db.verification.u
     annotation_file = query.first().make_path(self.annotation_directory, self.annotation_extension)
 
     # return the annotations as read from file
-    return xbob.db.verification.utils.read_annotation_file(annotation_file, 'eyecenter')
+    return bob.db.verification.utils.read_annotation_file(annotation_file, 'eyecenter')
 
   def protocol_names(self):
     """Returns all registered protocol names"""

@@ -24,10 +24,10 @@ There are a few ways to achieve this:
 
 The package is available in two different distribution formats:
 
-1. You can download it from `PyPI <http://pypi.python.org/pypi/xbob.db.mobio>`_, or
+1. You can download it from `PyPI <http://pypi.python.org/pypi/bob.db.mobio>`_, or
 
 2. You can download it in its source form from `its git repository
-   <https://github.com/bioidiap/xbob.db.mobio>`_. When you download the
+   <https://github.com/bioidiap/bob.db.mobio>`_. When you download the
    version at the git repository, you will need to run a command to recreate
    the backend SQLite file required for its operation. This means that the
    database raw files must be installed somewhere in this case. With option
@@ -47,11 +47,11 @@ script)::
 
     install_requires=[
       ...
-      "xbob.db.mobio",
+      "bob.db.mobio",
     ],
 
 Proceed normally with your ``boostrap/buildout`` steps and you should be all
-set. That means you can now import the ``xbob.db.mobio`` namespace into your scripts.
+set. That means you can now import the ``bob.db.mobio`` namespace into your scripts.
 
 Modify your buildout.cfg and download from git
 ==============================================
@@ -67,10 +67,10 @@ lines::
   auto-checkout = *
   eggs = bob
          ...
-         xbob.db.mobio
+         bob.db.mobio
 
   [sources]
-  xbob.db.mobio = git https://github.com/bioidiap/xbob.db.mobio.git
+  bob.db.mobio = git https://github.com/bioidiap/bob.db.mobio.git
   ...
 
 MOBIO protocols
@@ -82,10 +82,10 @@ has increased, considering the additional data recorded using laptops, which
 has led to 8 protocols.
 
 The two initial protocols 'female' and 'male' now correspond to the protocols
-called 'mobile0-female' and 'mobile0-male', respectively. The training, 
+called 'mobile0-female' and 'mobile0-male', respectively. The training,
 development and evaluation sets are indeed identical.
 
-However, if you want to use the same ZT score normalization files as in this 
+However, if you want to use the same ZT score normalization files as in this
 publication::
 
   @article{McCool_IET_BMT_2013,

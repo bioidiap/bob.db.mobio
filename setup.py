@@ -22,14 +22,14 @@ from setuptools import setup, find_packages
 # parameters that define our package.
 setup(
 
-    name='xbob.db.mobio',
-    version='1.2.2',
+    name='bob.db.mobio',
+    version='2.0.0a0',
     description='MOBIO Database Access API for Bob',
-    url='https://pypi.python.org/pypi/xbob.db.mobio',
+    url='https://pypi.python.org/pypi/bob.db.mobio',
     license='GPLv3',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
-    keywords='face recognition, speaker recognition, bob, xbob, xbob.db, mobio',
+    keywords='face recognition, speaker recognition, bob, bob.db, mobio',
     long_description=open('README.rst').read(),
 
     # This line is required for any distutils based packaging.
@@ -40,33 +40,33 @@ setup(
     install_requires=[
       'setuptools',
       'six',  # py2/3 compatibility library
-      'bob',  # base signal proc./machine learning library
-      'xbob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
+      'bob.db.base',
+      'bob.db.verification.utils' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
-      'xbob',
-      'xbob.db',
-      ],
+      'bob',
+      'bob.db',
+    ],
 
     entry_points = {
       # bob database declaration
       'bob.db': [
-        'mobio = xbob.db.mobio.driver:Interface',
-        ],
+        'mobio = bob.db.mobio.driver:Interface',
+      ],
 
       # bob unittest declaration
       'bob.test': [
-        'mobio = xbob.db.mobio.test:MobioDatabaseTest',
-        ],
+        'mobio = bob.db.mobio.test',
+      ],
       # scripts
       'console_scripts': [
-        'generate_filelist = xbob.db.mobio.generate_filelist:main',
-        ],
+        'generate_filelist = bob.db.mobio.generate_filelist:main',
+      ],
       },
 
     classifiers = [
-      'Development Status :: 5 - Production/Stable',
+      'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',
       'Intended Audience :: Education',

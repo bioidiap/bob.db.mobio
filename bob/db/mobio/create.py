@@ -142,15 +142,15 @@ def add_subworlds(session, verbose):
     "unis/f218/11_mobile/f218_11_p01_i0_0", "unis/f218/11_mobile/f218_11_f12_i0_0", "unis/f218/11_mobile/f218_11_l11_i0_0",
     "unis/f218/12_mobile/f218_12_p01_i0_0", "unis/f218/12_mobile/f218_12_f07_i0_0", "unis/f218/12_mobile/f218_12_l06_i0_0",
     "unis/f218/13_mobile/f218_13_p01_i0_0", "unis/f218/13_mobile/f218_13_f07_i0_0", "unis/f218/13_mobile/f218_13_l06_i0_0",
-    "unis/f218/14_mobile/f218_14_p01_i0_0", "unis/f218/14_mobile/f218_14_f07_i0_0", "unis/f218/14_mobile/f218_14_l06_i0_0", 
-    "unis/f218/15_mobile/f218_15_p01_i0_0", "unis/f218/15_mobile/f218_15_f07_i0_0", "unis/f218/15_mobile/f218_15_l06_i0_0", 
-    "unis/f218/16_mobile/f218_16_p01_i0_0", "unis/f218/16_mobile/f218_16_f07_i0_0", "unis/f218/16_mobile/f218_16_l06_i0_0", 
-    "unis/f218/17_mobile/f218_17_p01_i0_0", "unis/f218/17_mobile/f218_17_f07_i0_0", "unis/f218/17_mobile/f218_17_l06_i0_0", 
+    "unis/f218/14_mobile/f218_14_p01_i0_0", "unis/f218/14_mobile/f218_14_f07_i0_0", "unis/f218/14_mobile/f218_14_l06_i0_0",
+    "unis/f218/15_mobile/f218_15_p01_i0_0", "unis/f218/15_mobile/f218_15_f07_i0_0", "unis/f218/15_mobile/f218_15_l06_i0_0",
+    "unis/f218/16_mobile/f218_16_p01_i0_0", "unis/f218/16_mobile/f218_16_f07_i0_0", "unis/f218/16_mobile/f218_16_l06_i0_0",
+    "unis/f218/17_mobile/f218_17_p01_i0_0", "unis/f218/17_mobile/f218_17_f07_i0_0", "unis/f218/17_mobile/f218_17_l06_i0_0",
     "unis/f230/01_mobile/f230_01_p01_i0_0", "unis/f230/01_mobile/f230_01_f12_i0_0", "unis/f230/01_mobile/f230_01_l11_i0_0",
-    "unis/f230/02_mobile/f230_02_p01_i0_0", "unis/f230/02_mobile/f230_02_f12_i0_0", "unis/f230/02_mobile/f230_02_l11_i0_0", 
+    "unis/f230/02_mobile/f230_02_p01_i0_0", "unis/f230/02_mobile/f230_02_f12_i0_0", "unis/f230/02_mobile/f230_02_l11_i0_0",
     "unis/f230/03_mobile/f230_03_p01_i0_0", "unis/f230/03_mobile/f230_03_f12_i0_0", "unis/f230/03_mobile/f230_03_l11_i0_0",
-    "unis/f230/04_mobile/f230_04_p01_i0_0", "unis/f230/04_mobile/f230_04_f12_i0_0", "unis/f230/04_mobile/f230_04_l11_i0_0", 
-    "unis/f230/05_mobile/f230_05_p01_i0_0", "unis/f230/05_mobile/f230_05_f12_i0_0", "unis/f230/05_mobile/f230_05_l11_i0_0", 
+    "unis/f230/04_mobile/f230_04_p01_i0_0", "unis/f230/04_mobile/f230_04_f12_i0_0", "unis/f230/04_mobile/f230_04_l11_i0_0",
+    "unis/f230/05_mobile/f230_05_p01_i0_0", "unis/f230/05_mobile/f230_05_f12_i0_0", "unis/f230/05_mobile/f230_05_l11_i0_0",
     "unis/f230/06_mobile/f230_06_p01_i0_0", "unis/f230/06_mobile/f230_06_f12_i0_0", "unis/f230/06_mobile/f230_06_l11_i0_0",
     "unis/f230/07_mobile/f230_07_p01_i0_0", "unis/f230/07_mobile/f230_07_f07_i0_0", "unis/f230/07_mobile/f230_07_l06_i0_0",
     "unis/f230/08_mobile/f230_08_p01_i0_0", "unis/f230/08_mobile/f230_08_f07_i0_0", "unis/f230/08_mobile/f230_08_l06_i0_0",
@@ -160,9 +160,9 @@ def add_subworlds(session, verbose):
     "unis/f230/12_mobile/f230_12_p01_i0_0", "unis/f230/12_mobile/f230_12_f07_i0_0", "unis/f230/12_mobile/f230_12_l06_i0_0",
     "unis/f232/01_mobile/f232_01_p01_i0_0", "unis/f232/01_mobile/f232_01_f12_i0_0", "unis/f232/01_mobile/f232_01_l11_i0_0",
     "unis/f232/02_mobile/f232_02_p01_i0_0", "unis/f232/02_mobile/f232_02_f12_i0_0", "unis/f232/02_mobile/f232_02_l11_i0_0",
-    "unis/f232/03_mobile/f232_03_p01_i0_0", "unis/f232/03_mobile/f232_03_f12_i0_0", "unis/f232/03_mobile/f232_03_l11_i0_0", 
+    "unis/f232/03_mobile/f232_03_p01_i0_0", "unis/f232/03_mobile/f232_03_f12_i0_0", "unis/f232/03_mobile/f232_03_l11_i0_0",
     "unis/f232/04_mobile/f232_04_p01_i0_0", "unis/f232/04_mobile/f232_04_f12_i0_0", "unis/f232/04_mobile/f232_04_l11_i0_0",
-    "unis/f232/05_mobile/f232_05_p01_i0_0", "unis/f232/05_mobile/f232_05_f12_i0_0", "unis/f232/05_mobile/f232_05_l11_i0_0", 
+    "unis/f232/05_mobile/f232_05_p01_i0_0", "unis/f232/05_mobile/f232_05_f12_i0_0", "unis/f232/05_mobile/f232_05_l11_i0_0",
     "unis/f232/07_mobile/f232_07_p01_i0_0", "unis/f232/07_mobile/f232_07_f12_i0_0", "unis/f232/07_mobile/f232_07_l11_i0_0",
     "unis/f232/08_mobile/f232_08_p01_i0_0", "unis/f232/08_mobile/f232_08_f07_i0_0", "unis/f232/08_mobile/f232_08_l06_i0_0",
     "unis/f232/09_mobile/f232_09_p01_i0_0", "unis/f232/09_mobile/f232_09_f07_i0_0", "unis/f232/09_mobile/f232_09_l06_i0_0",
@@ -272,8 +272,8 @@ def add_subworlds(session, verbose):
     "unis/m208/04_mobile/m208_04_p01_i0_0", "unis/m208/04_mobile/m208_04_f12_i0_0", "unis/m208/04_mobile/m208_04_l11_i0_0",
     "unis/m208/05_mobile/m208_05_p01_i0_0", "unis/m208/05_mobile/m208_05_f12_i0_0", "unis/m208/05_mobile/m208_05_l11_i0_0",
     "unis/m208/06_mobile/m208_06_p01_i0_0", "unis/m208/06_mobile/m208_06_f12_i0_0", "unis/m208/06_mobile/m208_06_l11_i0_0",
-    "unis/m208/07_mobile/m208_07_p01_i0_0", "unis/m208/07_mobile/m208_07_f07_i0_0", "unis/m208/07_mobile/m208_07_l06_i0_0", 
-    "unis/m208/08_mobile/m208_08_p01_i0_0", "unis/m208/08_mobile/m208_08_f07_i0_0", "unis/m208/08_mobile/m208_08_l06_i0_0", 
+    "unis/m208/07_mobile/m208_07_p01_i0_0", "unis/m208/07_mobile/m208_07_f07_i0_0", "unis/m208/07_mobile/m208_07_l06_i0_0",
+    "unis/m208/08_mobile/m208_08_p01_i0_0", "unis/m208/08_mobile/m208_08_f07_i0_0", "unis/m208/08_mobile/m208_08_l06_i0_0",
     "unis/m208/09_mobile/m208_09_p01_i0_0", "unis/m208/09_mobile/m208_09_f07_i0_0", "unis/m208/09_mobile/m208_09_l06_i0_0",
     "unis/m208/10_mobile/m208_10_p01_i0_0", "unis/m208/10_mobile/m208_10_f07_i0_0", "unis/m208/10_mobile/m208_10_l06_i0_0",
     "unis/m208/11_mobile/m208_11_p01_i0_0", "unis/m208/11_mobile/m208_11_f07_i0_0", "unis/m208/11_mobile/m208_11_l06_i0_0",
@@ -374,7 +374,7 @@ def add_subworlds(session, verbose):
     "unis/m228/10_mobile/m228_10_p01_i0_0", "unis/m228/10_mobile/m228_10_f07_i0_0", "unis/m228/10_mobile/m228_10_l06_i0_0",
     "unis/m228/11_mobile/m228_11_p01_i0_0", "unis/m228/11_mobile/m228_11_f07_i0_0", "unis/m228/11_mobile/m228_11_l06_i0_0",
     "unis/m228/12_mobile/m228_12_p01_i0_0", "unis/m228/12_mobile/m228_12_f07_i0_0", "unis/m228/12_mobile/m228_12_l06_i0_0",
-    "lia/m501/01_mobile/m501_01_p01_i0_0", "lia/m501/01_mobile/m501_01_f12_i0_0", "lia/m501/01_mobile/m501_01_l11_i0_0", 
+    "lia/m501/01_mobile/m501_01_p01_i0_0", "lia/m501/01_mobile/m501_01_f12_i0_0", "lia/m501/01_mobile/m501_01_l11_i0_0",
     "lia/m501/02_mobile/m501_02_p01_i0_0", "lia/m501/02_mobile/m501_02_f12_i0_0", "lia/m501/02_mobile/m501_02_l11_i0_0",
     "lia/m501/03_mobile/m501_03_p01_i0_0", "lia/m501/03_mobile/m501_03_f12_i0_0", "lia/m501/03_mobile/m501_03_l11_i0_0",
     "lia/m501/04_mobile/m501_04_p01_i0_0", "lia/m501/04_mobile/m501_04_f12_i0_0", "lia/m501/04_mobile/m501_04_l11_i0_0",
@@ -391,7 +391,7 @@ def add_subworlds(session, verbose):
     "lia/m503/03_mobile/m503_03_p01_i0_0", "lia/m503/03_mobile/m503_03_f12_i0_0", "lia/m503/03_mobile/m503_03_l11_i0_0",
     "lia/m503/04_mobile/m503_04_p01_i0_0", "lia/m503/04_mobile/m503_04_f12_i0_0", "lia/m503/04_mobile/m503_04_l11_i0_0",
     "lia/m503/05_mobile/m503_05_p01_i0_0", "lia/m503/05_mobile/m503_05_f12_i0_0", "lia/m503/05_mobile/m503_05_l11_i0_0",
-    "lia/m503/06_mobile/m503_06_p01_i0_0", "lia/m503/06_mobile/m503_06_f12_i0_0", "lia/m503/06_mobile/m503_06_l11_i0_0", 
+    "lia/m503/06_mobile/m503_06_p01_i0_0", "lia/m503/06_mobile/m503_06_f12_i0_0", "lia/m503/06_mobile/m503_06_l11_i0_0",
     "lia/m503/07_mobile/m503_07_p01_i0_0", "lia/m503/07_mobile/m503_07_f07_i0_0", "lia/m503/07_mobile/m503_07_l06_i0_0",
     "lia/m503/08_mobile/m503_08_p01_i0_0", "lia/m503/08_mobile/m503_08_f07_i0_0", "lia/m503/08_mobile/m503_08_l06_i0_0",
     "lia/m503/09_mobile/m503_09_p01_i0_0", "lia/m503/09_mobile/m503_09_f07_i0_0", "lia/m503/09_mobile/m503_09_l06_i0_0",
@@ -770,7 +770,7 @@ def add_protocols(session, verbose):
 def create_tables(args):
   """Creates all necessary tables (only to be used at the first time)"""
 
-  from bob.db.utils import create_engine_try_nolock
+  from bob.db.base.utils import create_engine_try_nolock
 
   engine = create_engine_try_nolock(args.type, args.files[0], echo=(args.verbose > 2))
   Base.metadata.create_all(engine)
@@ -781,7 +781,7 @@ def create_tables(args):
 def create(args):
   """Creates or re-creates this database"""
 
-  from bob.db.utils import session_try_nolock
+  from bob.db.base.utils import session_try_nolock
 
   dbfile = args.files[0]
 
