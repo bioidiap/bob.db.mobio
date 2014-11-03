@@ -583,15 +583,15 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
     return list(q)
 
-  def annotations(self, file_id):
+  def annotations(self, file):
     """Reads the annotations for the given file id from file and returns them in a dictionary.
 
     If you don't have a copy of the annotation files, you can download them under http://www.idiap.ch/resource/biometric.
 
     Keyword parameters:
 
-    file_id
-      The ID of the file for which the annotations should be read.
+    file
+      The ``File`` object for which the annotations should be read.
 
     Return value
       The annotations as a dictionary: {'reye':(re_y,re_x), 'leye':(le_y,le_x)}
@@ -600,10 +600,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       return None
 
     self.assert_validity()
-
-    query = self.query(File).filter(File.id==file_id)
-    assert query.count() == 1
-    annotation_file = query.first().make_path(self.annotation_directory, self.annotation_extension)
+    annotation_file = file.make_path(self.annotation_directory, self.annotation_extension)
 
     # return the annotations as read from file
     return bob.db.verification.utils.read_annotation_file(annotation_file, 'eyecenter')

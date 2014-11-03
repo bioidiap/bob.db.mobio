@@ -414,7 +414,7 @@ def test_annotations():
   import random
   files = random.sample(db.all_files(), 1000)
   for file in files:
-    annotations = db.annotations(file.id)
+    annotations = db.annotations(file)
     assert annotations is not None
     assert 'leye' in annotations
     assert 'reye' in annotations
