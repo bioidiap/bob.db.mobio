@@ -359,7 +359,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       'male'and 'female' are aliases for 'mobile0-male' and 'mobile0-female', respectively.
 
     purposes
-      The purposes required to be retrieved ('enrol', 'probe') or a tuple
+      The purposes required to be retrieved ('enroll', 'probe') or a tuple
       with several of them. If 'None' is given (this is the default), it is
       considered the same as a tuple with all possible values. This field is
       ignored for the data from the "world" group.
@@ -419,9 +419,9 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       retval += list(q)
 
     if ('dev' in groups or 'eval' in groups):
-      if('enrol' in purposes):
+      if('enroll' in purposes):
         q = self.query(File).join(Client).join((ProtocolPurpose, File.protocol_purposes)).join(Protocol).\
-              filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enrol'))
+              filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll'))
         if gender:
           q = q.filter(Client.gender.in_(gender))
         if model_ids:
@@ -453,7 +453,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     return list(set(retval)) # To remove duplicates
 
   def tobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None, speech_type=None, device=None):
-    """Returns a set of filenames for enroling T-norm models for score
+    """Returns a set of filenames for enrolling T-norm models for score
        normalization.
 
     Keyword Parameters:

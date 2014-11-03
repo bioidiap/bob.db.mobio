@@ -55,17 +55,14 @@ setup(
         'mobio = bob.db.mobio.driver:Interface',
       ],
 
-      # bob unittest declaration
-      'bob.test': [
-        'mobio = bob.db.mobio.test',
-      ],
       # scripts
       'console_scripts': [
         'generate_filelist = bob.db.mobio.generate_filelist:main',
       ],
-      },
+    },
 
     classifiers = [
+      'Framework :: Bob',
       'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',

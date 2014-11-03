@@ -137,7 +137,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='mobile0-female', groups='dev')) == 1980
-  assert len(db.objects(protocol='mobile0-female', groups='dev', purposes='enrol')) == 90
+  assert len(db.objects(protocol='mobile0-female', groups='dev', purposes='enroll')) == 90
   assert len(db.objects(protocol='mobile0-female', groups='dev', purposes='probe')) == 1890
   assert len(db.objects(protocol='mobile0-female', groups='dev', purposes='probe', classes='client')) == 1890
   assert len(db.objects(protocol='mobile0-female', groups='dev', purposes='probe', classes='impostor')) == 1890
@@ -146,7 +146,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='mobile0-female', groups='eval')) == 2200
-  assert len(db.objects(protocol='mobile0-female', groups='eval', purposes='enrol')) == 100
+  assert len(db.objects(protocol='mobile0-female', groups='eval', purposes='enroll')) == 100
   assert len(db.objects(protocol='mobile0-female', groups='eval', purposes='probe')) == 2100
   assert len(db.objects(protocol='mobile0-female', groups='eval', purposes='probe', classes='client')) == 2100
   assert len(db.objects(protocol='mobile0-female', groups='eval', purposes='probe', classes='impostor')) == 2100
@@ -162,7 +162,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='mobile0-male', groups='dev')) == 2640
-  assert len(db.objects(protocol='mobile0-male', groups='dev', purposes='enrol')) == 120
+  assert len(db.objects(protocol='mobile0-male', groups='dev', purposes='enroll')) == 120
   assert len(db.objects(protocol='mobile0-male', groups='dev', purposes='probe')) == 2520
   assert len(db.objects(protocol='mobile0-male', groups='dev', purposes='probe', classes='client')) == 2520
   assert len(db.objects(protocol='mobile0-male', groups='dev', purposes='probe', classes='impostor')) == 2520
@@ -171,7 +171,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='mobile0-male', groups='eval')) == 4180
-  assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='enrol')) == 190
+  assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='enroll')) == 190
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe')) == 3990
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe', classes='client')) == 3990
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe', classes='impostor')) == 3990
@@ -188,7 +188,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='mobile1-female', groups='dev')) == 1980
-  assert len(db.objects(protocol='mobile1-female', groups='dev', purposes='enrol')) == 90
+  assert len(db.objects(protocol='mobile1-female', groups='dev', purposes='enroll')) == 90
   assert len(db.objects(protocol='mobile1-female', groups='dev', purposes='probe')) == 1890
   assert len(db.objects(protocol='mobile1-female', groups='dev', purposes='probe', classes='client')) == 1890
   assert len(db.objects(protocol='mobile1-female', groups='dev', purposes='probe', classes='impostor')) == 1890
@@ -197,7 +197,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='mobile1-female', groups='eval')) == 2200
-  assert len(db.objects(protocol='mobile1-female', groups='eval', purposes='enrol')) == 100
+  assert len(db.objects(protocol='mobile1-female', groups='eval', purposes='enroll')) == 100
   assert len(db.objects(protocol='mobile1-female', groups='eval', purposes='probe')) == 2100
   assert len(db.objects(protocol='mobile1-female', groups='eval', purposes='probe', classes='client')) == 2100
   assert len(db.objects(protocol='mobile1-female', groups='eval', purposes='probe', classes='impostor')) == 2100
@@ -213,7 +213,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='mobile1-male', groups='dev')) == 2640
-  assert len(db.objects(protocol='mobile1-male', groups='dev', purposes='enrol')) == 120
+  assert len(db.objects(protocol='mobile1-male', groups='dev', purposes='enroll')) == 120
   assert len(db.objects(protocol='mobile1-male', groups='dev', purposes='probe')) == 2520
   assert len(db.objects(protocol='mobile1-male', groups='dev', purposes='probe', classes='client')) == 2520
   assert len(db.objects(protocol='mobile1-male', groups='dev', purposes='probe', classes='impostor')) == 2520
@@ -222,7 +222,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='mobile1-male', groups='eval')) == 4180
-  assert len(db.objects(protocol='mobile1-male', groups='eval', purposes='enrol')) == 190
+  assert len(db.objects(protocol='mobile1-male', groups='eval', purposes='enroll')) == 190
   assert len(db.objects(protocol='mobile1-male', groups='eval', purposes='probe')) == 3990
   assert len(db.objects(protocol='mobile1-male', groups='eval', purposes='probe', classes='client')) == 3990
   assert len(db.objects(protocol='mobile1-male', groups='eval', purposes='probe', classes='impostor')) == 3990
@@ -239,7 +239,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='laptop1-female', groups='dev')) == 1980
-  assert len(db.objects(protocol='laptop1-female', groups='dev', purposes='enrol')) == 90
+  assert len(db.objects(protocol='laptop1-female', groups='dev', purposes='enroll')) == 90
   assert len(db.objects(protocol='laptop1-female', groups='dev', purposes='probe')) == 1890
   assert len(db.objects(protocol='laptop1-female', groups='dev', purposes='probe', classes='client')) == 1890
   assert len(db.objects(protocol='laptop1-female', groups='dev', purposes='probe', classes='impostor')) == 1890
@@ -248,7 +248,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='laptop1-female', groups='eval')) == 2200
-  assert len(db.objects(protocol='laptop1-female', groups='eval', purposes='enrol')) == 100
+  assert len(db.objects(protocol='laptop1-female', groups='eval', purposes='enroll')) == 100
   assert len(db.objects(protocol='laptop1-female', groups='eval', purposes='probe')) == 2100
   assert len(db.objects(protocol='laptop1-female', groups='eval', purposes='probe', classes='client')) == 2100
   assert len(db.objects(protocol='laptop1-female', groups='eval', purposes='probe', classes='impostor')) == 2100
@@ -264,7 +264,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='laptop1-male', groups='dev')) == 2640
-  assert len(db.objects(protocol='laptop1-male', groups='dev', purposes='enrol')) == 120
+  assert len(db.objects(protocol='laptop1-male', groups='dev', purposes='enroll')) == 120
   assert len(db.objects(protocol='laptop1-male', groups='dev', purposes='probe')) == 2520
   assert len(db.objects(protocol='laptop1-male', groups='dev', purposes='probe', classes='client')) == 2520
   assert len(db.objects(protocol='laptop1-male', groups='dev', purposes='probe', classes='impostor')) == 2520
@@ -273,7 +273,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='laptop1-male', groups='eval')) == 4180
-  assert len(db.objects(protocol='laptop1-male', groups='eval', purposes='enrol')) == 190
+  assert len(db.objects(protocol='laptop1-male', groups='eval', purposes='enroll')) == 190
   assert len(db.objects(protocol='laptop1-male', groups='eval', purposes='probe')) == 3990
   assert len(db.objects(protocol='laptop1-male', groups='eval', purposes='probe', classes='client')) == 3990
   assert len(db.objects(protocol='laptop1-male', groups='eval', purposes='probe', classes='impostor')) == 3990
@@ -290,7 +290,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='laptop_mobile1-female', groups='dev')) == 2070
-  assert len(db.objects(protocol='laptop_mobile1-female', groups='dev', purposes='enrol')) == 180
+  assert len(db.objects(protocol='laptop_mobile1-female', groups='dev', purposes='enroll')) == 180
   assert len(db.objects(protocol='laptop_mobile1-female', groups='dev', purposes='probe')) == 1890
   assert len(db.objects(protocol='laptop_mobile1-female', groups='dev', purposes='probe', classes='client')) == 1890
   assert len(db.objects(protocol='laptop_mobile1-female', groups='dev', purposes='probe', classes='impostor')) == 1890
@@ -299,7 +299,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='laptop_mobile1-female', groups='eval')) == 2300
-  assert len(db.objects(protocol='laptop_mobile1-female', groups='eval', purposes='enrol')) == 200
+  assert len(db.objects(protocol='laptop_mobile1-female', groups='eval', purposes='enroll')) == 200
   assert len(db.objects(protocol='laptop_mobile1-female', groups='eval', purposes='probe')) == 2100
   assert len(db.objects(protocol='laptop_mobile1-female', groups='eval', purposes='probe', classes='client')) == 2100
   assert len(db.objects(protocol='laptop_mobile1-female', groups='eval', purposes='probe', classes='impostor')) == 2100
@@ -315,7 +315,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='laptop_mobile1-male', groups='dev')) == 2760
-  assert len(db.objects(protocol='laptop_mobile1-male', groups='dev', purposes='enrol')) == 240
+  assert len(db.objects(protocol='laptop_mobile1-male', groups='dev', purposes='enroll')) == 240
   assert len(db.objects(protocol='laptop_mobile1-male', groups='dev', purposes='probe')) == 2520
   assert len(db.objects(protocol='laptop_mobile1-male', groups='dev', purposes='probe', classes='client')) == 2520
   assert len(db.objects(protocol='laptop_mobile1-male', groups='dev', purposes='probe', classes='impostor')) == 2520
@@ -324,7 +324,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='laptop_mobile1-male', groups='eval')) == 4370
-  assert len(db.objects(protocol='laptop_mobile1-male', groups='eval', purposes='enrol')) == 380
+  assert len(db.objects(protocol='laptop_mobile1-male', groups='eval', purposes='enroll')) == 380
   assert len(db.objects(protocol='laptop_mobile1-male', groups='eval', purposes='probe')) == 3990
   assert len(db.objects(protocol='laptop_mobile1-male', groups='eval', purposes='probe', classes='client')) == 3990
   assert len(db.objects(protocol='laptop_mobile1-male', groups='eval', purposes='probe', classes='impostor')) == 3990
@@ -341,7 +341,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='female', groups='dev')) == 1980
-  assert len(db.objects(protocol='female', groups='dev', purposes='enrol')) == 90
+  assert len(db.objects(protocol='female', groups='dev', purposes='enroll')) == 90
   assert len(db.objects(protocol='female', groups='dev', purposes='probe')) == 1890
   assert len(db.objects(protocol='female', groups='dev', purposes='probe', classes='client')) == 1890
   assert len(db.objects(protocol='female', groups='dev', purposes='probe', classes='impostor')) == 1890
@@ -350,7 +350,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='female', groups='eval')) == 2200
-  assert len(db.objects(protocol='female', groups='eval', purposes='enrol')) == 100
+  assert len(db.objects(protocol='female', groups='eval', purposes='enroll')) == 100
   assert len(db.objects(protocol='female', groups='eval', purposes='probe')) == 2100
   assert len(db.objects(protocol='female', groups='eval', purposes='probe', classes='client')) == 2100
   assert len(db.objects(protocol='female', groups='eval', purposes='probe', classes='impostor')) == 2100
@@ -366,7 +366,7 @@ def test_objects():
 
   # Dev group
   assert len(db.objects(protocol='male', groups='dev')) == 2640
-  assert len(db.objects(protocol='male', groups='dev', purposes='enrol')) == 120
+  assert len(db.objects(protocol='male', groups='dev', purposes='enroll')) == 120
   assert len(db.objects(protocol='male', groups='dev', purposes='probe')) == 2520
   assert len(db.objects(protocol='male', groups='dev', purposes='probe', classes='client')) == 2520
   assert len(db.objects(protocol='male', groups='dev', purposes='probe', classes='impostor')) == 2520
@@ -375,7 +375,7 @@ def test_objects():
 
   # Eval group
   assert len(db.objects(protocol='male', groups='eval')) == 4180
-  assert len(db.objects(protocol='male', groups='eval', purposes='enrol')) == 190
+  assert len(db.objects(protocol='male', groups='eval', purposes='enroll')) == 190
   assert len(db.objects(protocol='male', groups='eval', purposes='probe')) == 3990
   assert len(db.objects(protocol='male', groups='eval', purposes='probe', classes='client')) == 3990
   assert len(db.objects(protocol='male', groups='eval', purposes='probe', classes='impostor')) == 3990
@@ -427,8 +427,8 @@ def test_driver_api():
 
   from bob.db.base.script.dbmanage import main
   assert main('mobio dumplist --self-test'.split()) == 0
-  assert main('mobio dumplist --protocol=mobile0-male --class=client --group=dev --purpose=enrol --client=115 --self-test'.split()) == 0
-  assert main('mobio dumplist --protocol=male --class=client --group=dev --purpose=enrol --client=115 --self-test'.split()) == 0
+  assert main('mobio dumplist --protocol=mobile0-male --class=client --group=dev --purpose=enroll --client=115 --self-test'.split()) == 0
+  assert main('mobio dumplist --protocol=male --class=client --group=dev --purpose=enroll --client=115 --self-test'.split()) == 0
   assert main('mobio checkfiles --self-test'.split()) == 0
   assert main('mobio reverse uoulu/m313/01_mobile/m313_01_p01_i0_0 --self-test'.split()) == 0
   assert main('mobio path 21132 --self-test'.split()) == 0

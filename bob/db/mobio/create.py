@@ -676,23 +676,23 @@ def add_protocols(session, verbose):
                     (408,1), (409,1), (410,1), (411,1), (412,1), (413,1), (415,1), (433,1)]
   train_mobile = ['mobile']
   train_all = None
-  enrol_laptop = [['laptop'],['p']]
-  enrol_mobile = [['mobile'],['p']]
-  enrol_laptop_mobile = [['laptop','mobile'], ['p']]
+  enroll_laptop = [['laptop'],['p']]
+  enroll_mobile = [['mobile'],['p']]
+  enroll_laptop_mobile = [['laptop','mobile'], ['p']]
   probe = [['mobile'],['r', 'f']]
   gender_male = 'male'
   gender_female = 'female'
-  protocol_definitions['mobile0-male']          = [clients_male, train_mobile, enrol_mobile, probe, gender_male]
-  protocol_definitions['mobile0-female']        = [clients_female, train_mobile, enrol_mobile, probe, gender_female]
-  protocol_definitions['mobile1-male']          = [clients_male, train_all, enrol_mobile, probe, gender_male]
-  protocol_definitions['mobile1-female']        = [clients_female, train_all, enrol_mobile, probe, gender_female]
-  protocol_definitions['laptop1-male']          = [clients_male, train_all, enrol_laptop, probe, gender_male]
-  protocol_definitions['laptop1-female']        = [clients_female, train_all, enrol_laptop, probe, gender_female]
-  protocol_definitions['laptop_mobile1-male']   = [clients_male, train_all, enrol_laptop_mobile, probe, gender_male]
-  protocol_definitions['laptop_mobile1-female'] = [clients_female, train_all, enrol_laptop_mobile, probe, gender_female]
+  protocol_definitions['mobile0-male']          = [clients_male, train_mobile, enroll_mobile, probe, gender_male]
+  protocol_definitions['mobile0-female']        = [clients_female, train_mobile, enroll_mobile, probe, gender_female]
+  protocol_definitions['mobile1-male']          = [clients_male, train_all, enroll_mobile, probe, gender_male]
+  protocol_definitions['mobile1-female']        = [clients_female, train_all, enroll_mobile, probe, gender_female]
+  protocol_definitions['laptop1-male']          = [clients_male, train_all, enroll_laptop, probe, gender_male]
+  protocol_definitions['laptop1-female']        = [clients_female, train_all, enroll_laptop, probe, gender_female]
+  protocol_definitions['laptop_mobile1-male']   = [clients_male, train_all, enroll_laptop_mobile, probe, gender_male]
+  protocol_definitions['laptop_mobile1-female'] = [clients_female, train_all, enroll_laptop_mobile, probe, gender_female]
 
   # 2. ADDITIONS TO THE SQL DATABASE
-  protocolPurpose_list = [('world', 'train'), ('dev', 'enrol'), ('dev', 'probe'), ('eval', 'enrol'), ('eval', 'probe')]
+  protocolPurpose_list = [('world', 'train'), ('dev', 'enroll'), ('dev', 'probe'), ('eval', 'enroll'), ('eval', 'probe')]
   for proto in protocol_definitions:
     p = Protocol(proto, protocol_definitions[proto][4])
     # Add protocol
