@@ -18,12 +18,15 @@
 
 from setuptools import setup, find_packages
 
+# Define package version
+version = open("version.txt").read().rstrip()
+
 # The only thing we do in this file is to call the setup() function with all
 # parameters that define our package.
 setup(
 
     name='bob.db.mobio',
-    version='2.0.0a0',
+    version=version,
     description='MOBIO Database Access API for Bob',
     url='https://pypi.python.org/pypi/bob.db.mobio',
     license='GPLv3',
