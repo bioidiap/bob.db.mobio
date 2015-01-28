@@ -348,7 +348,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     return model_id
 
   def objects(self, protocol=None, purposes=None, model_ids=None,
-      groups=None, classes=None, subworld=None, gender=None):
+      groups=None, classes=None, subworld=None, gender=None, device=None):
     """Returns a set of Files for the specific query by the user.
 
     Keyword Parameters:
@@ -387,6 +387,9 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     gender
       The gender to consider ('male', 'female')
 
+    device
+      The device to consider ('laptop', 'mobile')
+
     Returns: A set of Files with the given properties.
     """
 
@@ -397,6 +400,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     classes = self.check_parameters_for_validity(classes, "class", ('client', 'impostor'))
     subworld = self.check_parameters_for_validity(subworld, "subworld", self.subworld_names(), [])
     gender = self.check_parameters_for_validity(gender, "gender", self.genders(), [])
+    device = self.check_parameters_for_validity(device, "device", File.device_choices, [])
 
     import collections
     if(model_ids is None):
@@ -413,6 +417,8 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
         q = q.join((Subworld, File.subworld)).filter(Subworld.name.in_(subworld))
       if gender:
         q = q.filter(Client.gender.in_(gender))
+      if device:
+        q = q.filter(File.device.in_(device))
       if model_ids:
         q = q.filter(File.client_id.in_(model_ids))
       q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
@@ -424,6 +430,8 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
               filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll'))
         if gender:
           q = q.filter(Client.gender.in_(gender))
+        if device:
+          q = q.filter(File.device.in_(device))
         if model_ids:
           q = q.filter(Client.id.in_(model_ids))
         q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
@@ -435,6 +443,8 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
+          if device:
+            q = q.filter(File.device.in_(device))
           if model_ids:
             q = q.filter(Client.id.in_(model_ids))
           q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
@@ -445,6 +455,8 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if gender:
             q = q.filter(Client.gender.in_(gender))
+          if device:
+            q = q.filter(File.device.in_(device))
           if len(model_ids) == 1:
             q = q.filter(not_(File.client_id.in_(model_ids)))
           q = q.order_by(File.client_id, File.session_id, File.speech_type, File.shot_id, File.device)
@@ -637,4 +649,3 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     """Returns the list of allowed purposes"""
 
     return ProtocolPurpose.purpose_choices
-
