@@ -6,7 +6,7 @@
    :target: http://pythonhosted.org/bob.db.mobio/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html
-.. image:: https://travis-ci.org/bioidiap/bob.db.mobio.svg?branch=master
+.. image:: https://travis-ci.org/bioidiap/bob.db.mobio.svg?branch=v2.0.3
    :target: https://travis-ci.org/bioidiap/bob.db.mobio
 .. image:: https://coveralls.io/repos/bioidiap/bob.db.mobio/badge.png
    :target: https://coveralls.io/r/bioidiap/bob.db.mobio
