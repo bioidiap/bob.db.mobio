@@ -32,7 +32,7 @@ setup(
     name='bob.db.mobio',
     version=version,
     description='MOBIO Database Access API for Bob',
-    url='https://pypi.python.org/pypi/bob.db.mobio',
+    url='https://github.com/bioidiap/bob.db.mobio',
     license='GPLv3',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
