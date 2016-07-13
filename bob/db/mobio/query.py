@@ -39,7 +39,7 @@ class Database(bob.db.base.SQLiteDatabase):
 
   def __init__(self, original_directory=None, original_extension=None, annotation_directory=None, annotation_extension='.pos'):
     # call base class constructors to open a session to the database
-    bob.db.base.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
+    super(Database, self).__init__(SQLITE_FILE, File)
 
     self.annotation_directory = annotation_directory
     self.annotation_extension = annotation_extension
