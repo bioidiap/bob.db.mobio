@@ -32,8 +32,8 @@ setup(
     name='bob.db.mobio',
     version=version,
     description='MOBIO Database Access API for Bob',
-    url='https://github.com/bioidiap/bob.db.mobio',
-    license='GPLv3',
+    url='https://gitlab.idiap.ch/bob/bob.db.mobio',
+    license='BSD',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
     keywords='face recognition, speaker recognition, bob, bob.db, mobio',
@@ -45,8 +45,6 @@ setup(
     zip_safe=False,
 
     install_requires = install_requires,
-
-
 
     entry_points = {
       # bob database declaration
@@ -67,7 +65,7 @@ setup(
       'Intended Audience :: Developers',
       'Intended Audience :: Education',
       'Intended Audience :: Science/Research',
-      'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+      'License :: OSI Approved :: BSD License',
       'Natural Language :: English',
       'Programming Language :: Python',
       'Programming Language :: Python :: 3',

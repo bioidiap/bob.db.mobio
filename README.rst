@@ -1,44 +1,49 @@
 .. vim: set fileencoding=utf-8 :
-.. Manuel Guenther <manuel.guenther@idiap.ch>
-.. Fri Oct 31 14:18:57 CET 2014
+.. Tue 16 Aug 12:01:32 CEST 2016
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.png
    :target: http://pythonhosted.org/bob.db.mobio/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html
-.. image:: https://travis-ci.org/bioidiap/bob.db.mobio.svg?branch=master
-   :target: https://travis-ci.org/bioidiap/bob.db.mobio
-.. image:: https://coveralls.io/repos/bioidiap/bob.db.mobio/badge.svg?branch=master
-   :target: https://coveralls.io/r/bioidiap/bob.db.mobio
-.. image:: https://img.shields.io/badge/github-master-0000c0.png
-   :target: https://github.com/bioidiap/bob.db.mobio/tree/master
+.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
+.. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.mobio
 .. image:: http://img.shields.io/pypi/v/bob.db.mobio.png
    :target: https://pypi.python.org/pypi/bob.db.mobio
 .. image:: http://img.shields.io/pypi/dm/bob.db.mobio.png
    :target: https://pypi.python.org/pypi/bob.db.mobio
-.. image:: https://img.shields.io/badge/original-data--files-a000a0.png
-   :target: http://www.idiap.ch/dataset/mobio
+
 
 ==================================
  MOBIO Database Interface for Bob
 ==================================
 
-This package contains an interface for the evaluation protocol of the `MOBIO`_ database.
-This package does not contain the original `MOBIO`_ data files, which need to be obtained through the link above.
+This package is part of the signal-processing and machine learning toolbox
+Bob_. It contains an interface for the evaluation protocol of the `MOBIO`_
+database. This package does not contain the original `MOBIO`_ data files, which
+need to be obtained through the link above.
 
 
 Installation
 ------------
-To install this package -- alone or together with other `Packages of Bob <https://github.com/idiap/bob/wiki/Packages>`_ -- please read the `Installation Instructions <https://github.com/idiap/bob/wiki/Installation>`_.
-For Bob_ to be able to work properly, some dependent packages are required to be installed.
-Please make sure that you have read the `Dependencies <https://github.com/idiap/bob/wiki/Dependencies>`_ for your operating system.
 
-Documentation
--------------
-For further documentation on this package, please read the `Stable Version <http://pythonhosted.org/bob.db.mobio/index.html>`_ or the `Latest Version <https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html>`_ of the documentation.
-For a list of tutorials on this or the other packages ob Bob_, or information on submitting issues, asking questions and starting discussions, please visit its website.
+Follow our `installation`_ instructions. Then, using the Python interpreter
+provided by the distribution, bootstrap and buildout this package::
 
+  $ python bootstrap-buildout.py
+  $ ./bin/buildout
+
+
+Contact
+-------
+
+For questions or reporting issues to this software package, contact our
+development `mailing list`_.
+
+
+.. Place your references here:
 .. _bob: https://www.idiap.ch/software/bob
+.. _installation: https://gitlab.idiap.ch/bob/bob/wikis/Installation
+.. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/bob-devel
 .. _mobio: http://www.idiap.ch/dataset/mobio
-
-
