@@ -5,8 +5,8 @@
    :target: http://pythonhosted.org/bob.db.mobio/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/v2.1.1/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/v2.1.1
+.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio
 .. image:: http://img.shields.io/pypi/v/bob.db.mobio.png
