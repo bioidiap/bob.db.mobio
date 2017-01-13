@@ -155,9 +155,10 @@ class File(Base, bob.db.base.File):
 
   def __init__(self, client_id, path, session_id, speech_type, shot_id, environment, device, channel_id):
     # call base class constructor
-    bob.db.base.File.__init__(self, client_id=client_id, path=path)
+    bob.db.base.File.__init__(self, path=path)
 
     # fill the remaining bits of the file information
+    self.client_id = client_id
     self.session_id = session_id
     self.speech_type = speech_type
     self.shot_id = shot_id
