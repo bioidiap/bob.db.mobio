@@ -1,17 +1,17 @@
 .. vim: set fileencoding=utf-8 :
 .. Tue 16 Aug 12:01:32 CEST 2016
 
-.. image:: http://img.shields.io/badge/docs-stable-yellow.png
+.. image:: http://img.shields.io/badge/docs-stable-yellow.svg
    :target: http://pythonhosted.org/bob.db.mobio/index.html
-.. image:: http://img.shields.io/badge/docs-latest-orange.png
+.. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio
-.. image:: http://img.shields.io/pypi/v/bob.db.mobio.png
+.. image:: http://img.shields.io/pypi/v/bob.db.mobio.svg
    :target: https://pypi.python.org/pypi/bob.db.mobio
-.. image:: http://img.shields.io/pypi/dm/bob.db.mobio.png
+.. image:: http://img.shields.io/pypi/dm/bob.db.mobio.svg
    :target: https://pypi.python.org/pypi/bob.db.mobio
 
 
@@ -44,6 +44,6 @@ development `mailing list`_.
 
 .. Place your references here:
 .. _bob: https://www.idiap.ch/software/bob
-.. _installation: https://gitlab.idiap.ch/bob/bob/wikis/Installation
+.. _installation: https://www.idiap.ch/software/bob/install
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/bob-devel
 .. _mobio: http://www.idiap.ch/dataset/mobio
