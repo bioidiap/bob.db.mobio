@@ -1,3 +1,8 @@
+# This is not documented as py:exc in Python 2.7 - works in Python 3.x
+py:obj list
+py:class list
+
+# Other exceptions from elsewhere
 py:class bob.db.base.file.File
 py:class bob.db.base.database.SQLiteDatabase
 py:class sqlalchemy.ext.declarative.api.Base
