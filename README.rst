@@ -2,9 +2,9 @@
 .. Tue 16 Aug 12:01:32 CEST 2016
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.svg
-   :target: http://pythonhosted.org/bob.db.mobio/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
-   :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.mobio/master/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bioidiap/bob.db.mobio/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
 .. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/coverage.svg
@@ -12,8 +12,6 @@
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio
 .. image:: http://img.shields.io/pypi/v/bob.db.mobio.svg
-   :target: https://pypi.python.org/pypi/bob.db.mobio
-.. image:: http://img.shields.io/pypi/dm/bob.db.mobio.svg
    :target: https://pypi.python.org/pypi/bob.db.mobio
 
 
@@ -30,7 +28,7 @@ need to be obtained through the link above.
 Installation
 ------------
 
-Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+Complete Bob's `installation`_ instructions. Then, to install this package,
 run::
 
   $ conda install bob.db.mobio
