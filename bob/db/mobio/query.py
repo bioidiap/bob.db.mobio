@@ -493,7 +493,7 @@ class Database(bob.db.base.SQLiteDatabase):
                          File.speech_type, File.shot_id, File.device)
           retval += list(q)
 
-    return list(set(retval))  # To remove duplicates
+    return sorted(list(set(retval)), key=lambda x: x.id)  # To remove duplicates
 
   def tobjects(self, protocol=None, model_ids=None, groups=None, subworld='onethird', gender=None, speech_type=None, device=None):
     """Returns a set of filenames for enrolling T-norm models for score
