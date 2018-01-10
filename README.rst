@@ -4,7 +4,7 @@
 .. image:: http://img.shields.io/badge/docs-stable-yellow.svg
    :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
-   :target: https://www.idiap.ch/software/bob/docs/bioidiap/bob.db.mobio/master/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
 .. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/coverage.svg
