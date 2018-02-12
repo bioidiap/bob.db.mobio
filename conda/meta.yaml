@@ -24,7 +24,7 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - bob.db.base
-        - six {{ six }}
+    - six {{ six }}
   run:
     - python
     - setuptools
