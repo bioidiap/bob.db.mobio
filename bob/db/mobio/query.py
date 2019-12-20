@@ -79,6 +79,10 @@ class Database(bob.db.base.SQLiteDatabase):
       return 'mobile0-male'
     elif protocol == 'female':
       return 'mobile0-female'
+    elif protocol == 'both':
+      return 'mobile0-both'
+    elif protocol == 'balanced':
+      return 'mobile0-balanced'
     else:
       return protocol
 
@@ -401,7 +405,7 @@ class Database(bob.db.base.SQLiteDatabase):
       split should be specified.
 
     gender
-      The gender to consider ('male', 'female')
+      The gender to consider ('male', 'female', 'both', 'balanced')
 
     device
       The device to consider ('laptop', 'mobile')

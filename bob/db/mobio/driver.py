@@ -153,7 +153,7 @@ class Interface(BaseInterface):
     parser = subparsers.add_parser('dumplist', help=dumplist.__doc__)
     parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
     parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
-    parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=list(db.protocol_names()).extend(['male', 'female']) if db.is_valid() else ())
+    parser.add_argument('-p', '--protocol', help="if given, limits the check to a particular subset of the data that corresponds to the given protocol.", choices=list(db.protocol_names()).extend(['male', 'female', 'both', 'balanced']) if db.is_valid() else ())
     parser.add_argument('-u', '--purpose', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.purposes() if db.is_valid() else ())
     parser.add_argument('-C', '--client', type=int, help="if given, limits the dump to a particular client.", choices=db.model_ids() if db.is_valid() else ())
     parser.add_argument('-g', '--group', help="if given, this value will limit the output files to those belonging to a particular protocolar group.", choices=db.groups() if db.is_valid() else ())

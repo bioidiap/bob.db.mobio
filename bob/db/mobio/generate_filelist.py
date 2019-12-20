@@ -64,7 +64,7 @@ def main():
 
 
   ########################
-  # Loading Hiperparameters
+  # Loading Hyperparameters
   #########################
   m_output_dir = args.output_dir
   m_protocol_name = args.protocol_name
@@ -75,9 +75,15 @@ def main():
   if m_protocol_name not in db.protocol_names():
     raise ValueError("The given protocol name '%s' does not exist."%m_protocol_name)
 
-  gender_value = 'female'
-  if m_protocol_name.find(gender_value) == -1:
+  if m_protocol_name.find('female') != -1:
+    gender_value = 'female'
+  elif m_protocol_name.find('male') != -1:
     gender_value = 'male'
+  elif m_protocol_name.find('balanced') != -1:
+    gender_value = 'balanced'
+  else:
+    gender_value = 'both'
+
   print('gender: %s' % gender_value)
 
 
