@@ -23,6 +23,8 @@ import os
 
 from .models import *
 
+from sqlalchemy import and_
+
 def nodot(item):
   """Can be used to ignore hidden files, starting with the . character."""
   return item[0] != '.'
@@ -791,7 +793,12 @@ def create_tables(args):
 
   from bob.db.base.utils import create_engine_try_nolock
 
-  engine = create_engine_try_nolock(args.type, args.files[0], echo=(args.verbose > 2))
+  if not args.verbose:
+    verbose_level = 0
+  else:
+    verbose_level = args.verbose
+
+  engine = create_engine_try_nolock(args.type, args.files[0], echo=(verbose_level > 2))
   Base.metadata.create_all(engine)
 
 # Driver API
