@@ -1,14 +1,14 @@
 .. vim: set fileencoding=utf-8 :
 .. Tue 16 Aug 12:01:32 CEST 2016
 
-.. image:: http://img.shields.io/badge/docs-v2.2.4-yellow.svg
-   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/v2.2.4/index.html
+.. image:: http://img.shields.io/badge/docs-stable-yellow.svg
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.mobio/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/v2.2.4/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/v2.2.4
-.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/v2.2.4/coverage.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/v2.2.4
+.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.db.mobio/badges/master/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.mobio/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.mobio
 .. image:: http://img.shields.io/pypi/v/bob.db.mobio.svg
