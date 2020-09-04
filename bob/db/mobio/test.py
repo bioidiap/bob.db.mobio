@@ -68,6 +68,7 @@ def test_clients():
   # Check T-Norm and Z-Norm clients
   assert len(db.tclients(protocol='mobile0-female')) == 16
   assert len(db.tclients(protocol='mobile0-male')) == 16
+  assert len(db.tclients(protocol='mobile0-male-female')) == 16
   assert len(db.tclients(protocol='mobile1-female')) == 16
   assert len(db.tclients(protocol='mobile1-male')) == 16
   assert len(db.tclients(protocol='laptop1-female')) == 16
@@ -79,6 +80,7 @@ def test_clients():
   assert len(db.zclients()) == 16
   assert len(db.zclients(protocol='mobile0-female')) == 16
   assert len(db.zclients(protocol='mobile0-male')) == 16
+  assert len(db.zclients(protocol='mobile0-male-female')) == 16
   assert len(db.zclients(protocol='mobile1-female')) == 16
   assert len(db.zclients(protocol='mobile1-male')) == 16
   assert len(db.zclients(protocol='laptop1-female')) == 16
@@ -90,6 +92,7 @@ def test_clients():
   # Check T-Norm models
   assert len(db.tmodels(protocol='mobile0-female')) == 192
   assert len(db.tmodels(protocol='mobile0-male')) == 192
+  assert len(db.tmodels(protocol='mobile0-male-female')) == 192
   assert len(db.tmodels(protocol='mobile1-female')) == 208
   assert len(db.tmodels(protocol='mobile1-male')) == 208
   assert len(db.tmodels(protocol='laptop1-female')) == 208
@@ -105,8 +108,8 @@ def test_protocols():
 
   db = bob.db.mobio.Database()
 
-  assert len(db.protocols()) == 8
-  assert len(db.protocol_names()) == 8
+  assert len(db.protocols()) == 9
+  assert len(db.protocol_names()) == 9
   assert db.has_protocol('mobile0-male')
   assert db.has_protocol('mobile0-female')
   assert db.has_protocol('mobile1-male')
@@ -117,6 +120,7 @@ def test_protocols():
   assert db.has_protocol('laptop_mobile1-female')
   assert db.has_protocol('male') # alias to 'mobile0-male'
   assert db.has_protocol('female') # alias 'mobile0-female'
+  assert db.has_protocol('mobile0-male-female')
 
   assert len(db.subworlds()) == 3
   assert len(db.subworld_names()) == 3
@@ -177,6 +181,33 @@ def test_objects():
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe', classes='impostor')) == 3990
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe', classes='client', model_ids=1)) == 105
   assert len(db.objects(protocol='mobile0-male', groups='eval', purposes='probe', classes='impostor', model_ids=1)) == 3885
+
+
+  # Protocol mobile0-male-female
+  # World group
+  assert len(db.objects(protocol='mobile0-male-female', groups='world')) == 9600
+  assert len(db.objects(protocol='mobile0-male-female', groups='world', purposes='train')) == 9600
+  assert len(db.objects(protocol='mobile0-male-female', groups='world', gender=['male','female'])) == 7104 +  2496
+  assert len(db.objects(protocol='mobile0-male-female', groups='world', purposes='train', model_ids=204)) == 192
+
+  # Dev group
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev')) == 2640 + 1980
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='enroll')) == 120 + 90
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='probe')) == 2520 + 1890
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='probe', classes='client')) == 2520 + 1890
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='probe', classes='impostor')) == 2520 + 1890
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='probe', classes='client', model_ids=103)) == 105
+  assert len(db.objects(protocol='mobile0-male-female', groups='dev', purposes='probe', classes='impostor', model_ids=103)) == 4305
+
+  # Eval group
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval')) == 4180 + 2200
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='enroll')) == 190 + 100
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='probe')) == 3990 + 2100
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='probe', classes='client')) == 3990 + 2100
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='probe', classes='impostor')) == 3990 + 2100
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='probe', classes='client', model_ids=1)) == 105
+  assert len(db.objects(protocol='mobile0-male-female', groups='eval', purposes='probe', classes='impostor', model_ids=1)) == 3885 + 1995 + 105
+
 
 
   # Protocol mobile1-female
