@@ -176,7 +176,7 @@ class Protocol(Base):
   id = Column(Integer, primary_key=True)
   # Name of the protocol associated with this object
   name = Column(String(20), unique=True)
-  gender_choices = ('female', 'male')
+  gender_choices = ('female', 'male','both')
   gender = Column(Enum(*gender_choices))
 
   def __init__(self, name, gender):

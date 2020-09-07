@@ -127,6 +127,7 @@ class Database(bob.db.base.SQLiteDatabase):
         groups, "group", self.groups(), self.groups())
     subworld = self.check_parameters_for_validity(
         subworld, "subworld", self.subworld_names(), [])
+
     gender = self.check_parameters_for_validity(
         gender, "gender", self.genders(), [])
 
@@ -152,6 +153,8 @@ class Database(bob.db.base.SQLiteDatabase):
       if protocol:
         q = self.query(Protocol).filter(Protocol.name.in_(protocol)).one()
         protocol_gender = [q.gender]
+        if "both" in protocol_gender:
+          protocol_gender = None
       q = self.query(Client).filter(Client.sgroup.in_(dev_eval))
       if protocol_gender:
         q = q.filter(Client.gender.in_(protocol_gender))

@@ -20,7 +20,7 @@
 """
 
 import os
-
+from sqlalchemy import and_
 from .models import *
 
 def nodot(item):
@@ -682,6 +682,9 @@ def add_protocols(session, verbose):
   probe = [['mobile'],['r', 'f']]
   gender_male = 'male'
   gender_female = 'female'
+  gender_both = 'both'
+
+  protocol_definitions['mobile0-male-female']   = [clients_male+clients_female, train_mobile, enroll_mobile, probe, gender_both]
   protocol_definitions['mobile0-male']          = [clients_male, train_mobile, enroll_mobile, probe, gender_male]
   protocol_definitions['mobile0-female']        = [clients_female, train_mobile, enroll_mobile, probe, gender_female]
   protocol_definitions['mobile1-male']          = [clients_male, train_all, enroll_mobile, probe, gender_male]
@@ -692,7 +695,7 @@ def add_protocols(session, verbose):
   protocol_definitions['laptop_mobile1-female'] = [clients_female, train_all, enroll_laptop_mobile, probe, gender_female]
 
   # 2. ADDITIONS TO THE SQL DATABASE
-  protocolPurpose_list = [('world', 'train'), ('dev', 'enroll'), ('dev', 'probe'), ('eval', 'enroll'), ('eval', 'probe')]
+  protocolPurpose_list = [('world', 'train'), ('dev', 'enroll'), ('dev', 'probe'), ('eval', 'enroll'), ('eval', 'probe')]  
   for proto in protocol_definitions:
     p = Protocol(proto, protocol_definitions[proto][4])
     # Add protocol
